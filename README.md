@@ -16,7 +16,7 @@ The goal of this project is to help students and other users quickly search thei
 
 ## Current Stage
 
-Week 2 — Project selection and design.
+Week 2 — Project design completed and approved by the mentor.
 
 ## Planned Features
 
