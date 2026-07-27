@@ -6,8 +6,8 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "check:schemas": "tsx src/schemas/check-schemas.ts"
+  "typecheck": "tsc --noEmit",
+  "check:schemas": "tsx scripts/check-schemas.ts"
   },
   "repository": {
     "type": "git",
