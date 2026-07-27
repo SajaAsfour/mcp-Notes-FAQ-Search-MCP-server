@@ -1,0 +1,1 @@
+We are building a Notes & FAQ Search MCP server for students so that they can quickly search their own notes and frequently asked questions fully offline.
