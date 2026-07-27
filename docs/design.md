@@ -63,4 +63,6 @@ Notes or FAQ entries may be missing required fields, contain duplicate IDs, or u
 
 This design must be reviewed and approved by the mentor before Week 3 data wiring begins.
 
-Current status: **Pending mentor approval**
+Current status: **Approved**
+
+The project design was reviewed and approved by the mentor.
