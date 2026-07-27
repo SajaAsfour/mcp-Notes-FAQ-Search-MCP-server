@@ -1,0 +1,38 @@
+{
+  "name": "mcp-notes-faq-search-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An offline Notes and FAQ Search MCP server for the NextFlows Academy project.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check:schemas": "tsx src/schemas/check-schemas.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server.git"
+  },
+  "keywords": [
+    "mcp",
+    "notes",
+    "faq",
+    "search",
+    "typescript",
+    "zod"
+  ],
+  "author": "Saja Asfour and Yara Khattab",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server/issues"
+  },
+  "homepage": "https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server#readme",
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  }
+}
