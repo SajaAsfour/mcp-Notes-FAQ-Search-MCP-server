@@ -16,11 +16,13 @@ The goal of this project is to help students and other users quickly search thei
 
 ## Current Stage
 
-Week 2 — Multi-tool MCP server skeleton completed.
+Week 2 — Skeleton demo in MCP Inspector completed.
 
-The project now includes a working MCP server factory, stdio transport setup, and one register function for every planned tool.
+The MCP server registers all five planned tools, and every tool is discoverable through MCP Inspector.
 
-The tools currently return placeholder responses. Local data and real search behavior will be implemented in Week 3.
+Valid sample argument files are available in `examples/`. The three P0 tools accept valid inputs and return placeholder responses, while invalid input is rejected by schema validation before the stub handler runs.
+
+Real local data and search behavior will be implemented in Week 3.
 
 ## Tool Inventory
 
@@ -82,7 +84,11 @@ mcp-Notes-FAQ-Search-MCP-server/
 │   ├── design.md
 │   └── project-choice.md
 ├── examples/
-│   └── get-note.json
+│   ├── add_note.json
+│   ├── get_note.json
+│   ├── list_notes.json
+│   ├── search_faqs.json
+│   └── search_notes.json
 ├── scripts/
 │   └── check-schemas.ts
 ├── src/
@@ -226,6 +232,36 @@ Stop the server using:
 ```text
 Ctrl+C
 ```
+## MCP Inspector Skeleton Demo
+
+The registered tools can be tested using MCP Inspector.
+
+Run the Inspector from the project root:
+
+```bash
+npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
+```
+
+The Inspector should list the following tools:
+
+- `search_notes`
+- `search_faqs`
+- `get_note`
+- `list_notes`
+- `add_note`
+
+Valid sample arguments for every tool are available inside:
+
+```text
+examples/
+```
+
+During the Week 2 skeleton demo:
+
+- All five planned tools were discoverable.
+- The three P0 tools accepted valid sample inputs.
+- Placeholder responses were returned successfully.
+- A `search_notes` call without the required `query` field was rejected by schema validation.
 
 ## Commands Not Added Yet
 
@@ -261,8 +297,13 @@ The current stub handlers do not access external services.
 - [x] All planned tools registered
 - [x] Placeholder handlers added
 - [x] Development server command added
+- [x] One valid JSON example added for every planned tool
+- [x] All planned tools discovered in MCP Inspector
+- [x] Valid P0 calls verified in MCP Inspector
+- [x] Invalid input rejection verified
+- [x] Week 2 Inspector proof completed
 - [ ] Local notes data added
 - [ ] Local FAQ data added
 - [ ] Real P0 handlers implemented
 - [ ] Error handling implemented
-- [ ] MCP Inspector testing completed
+- [ ] Real local-data handlers tested in MCP Inspector
