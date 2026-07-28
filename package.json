@@ -6,8 +6,9 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-  "typecheck": "tsc --noEmit",
-  "check:schemas": "tsx scripts/check-schemas.ts"
+    "typecheck": "tsc --noEmit",
+    "check:schemas": "tsx scripts/check-schemas.ts",
+    "dev": "tsx src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server#readme",
   "dependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
