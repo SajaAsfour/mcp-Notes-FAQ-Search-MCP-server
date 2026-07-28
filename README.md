@@ -8,48 +8,71 @@ https://nextflows.ai/academy
 
 Notes & FAQ Search is an MCP server that allows users to search their own notes and frequently asked questions fully offline.
 
-The project is designed to provide a simple, private, and accessible way to find information without requiring paid API keys or an internet connection.
+The project provides a simple and private way to find information without requiring paid API keys, cloud storage, or an internet connection while the server is running.
 
 ## Project Goal
 
-The goal of this project is to help students and other users quickly search their personal notes and FAQ collections through MCP tools.
+The goal of this project is to help students and other users quickly search their personal notes and FAQ collections through focused MCP tools.
 
 ## Current Stage
 
-Week 2 — Project design and Zod schemas completed.
+Week 2 — Multi-tool MCP server skeleton completed.
 
-The project design was reviewed and approved by the mentor. Input schemas have been added for the three P0 tools, along with a local schema validation script.
+The project now includes a working MCP server factory, stdio transport setup, and one register function for every planned tool.
 
-## P0 Tools
+The tools currently return placeholder responses. Local data and real search behavior will be implemented in Week 3.
 
-The following tools are required for the Demo Day version of the project:
+## Tool Inventory
 
-- `search_notes` — searches the locally stored notes using a text query.
-- `search_faqs` — searches the locally stored FAQ entries.
+### P0 Tools
+
+The following tools are required for the Demo Day workflow:
+
+- `search_notes` — searches locally stored notes using a text query.
+- `search_faqs` — searches locally stored FAQ questions and answers.
 - `get_note` — retrieves one complete note using its unique ID.
 
-The tool handlers will be implemented in a later stage. The current stage defines and validates the input contract for each tool.
+The P0 tools are registered and currently return placeholder JSON responses.
+
+### P1 Tools
+
+The following tools are optional planned features:
+
+- `list_notes` — lists available notes with optional tag filtering.
+- `add_note` — adds a new note to the local collection.
+
+The P1 tools are registered but currently return a `Not implemented yet` response.
 
 ## Completed Work
 
 - Selected Notes & FAQ Search as the project idea.
 - Completed the project design document.
-- Added Zod schemas for the three P0 tools.
-- Added descriptions and validation rules for every input field.
-- Added sensible minimum and maximum input limits.
-- Added a local script for testing valid and invalid schema inputs.
+- Received mentor approval for the project design.
+- Defined three P0 tools and two P1 tools.
+- Added Zod input schemas for all planned tools.
+- Added descriptions and validation rules for tool inputs.
+- Added a local script for testing the three P0 schemas.
 - Added an example input for the `get_note` tool.
-- Confirmed that the TypeScript and schema checks pass.
+- Added the MCP server dependency.
+- Added a `createServer()` factory.
+- Added one register function per tool.
+- Registered all five planned tools.
+- Connected the MCP server using `serveStdio`.
+- Added a development command for running the server.
+- Confirmed that TypeScript and schema checks pass.
+- Confirmed that the MCP server starts successfully over stdio.
 
 ## Planned Features
 
-- Search notes using keywords.
-- Search frequently asked questions.
-- Retrieve the full content of a specific note.
-- List available notes.
-- Add new notes.
-- Return clear and structured search results.
-- Work fully offline.
+- Add local fixture data for notes.
+- Add local fixture data for FAQ entries.
+- Implement keyword-based note searching.
+- Implement FAQ searching.
+- Retrieve complete notes by ID.
+- Add clear errors for missing notes.
+- Replace placeholder handlers with real local data handlers.
+- Test the completed P0 workflow in MCP Inspector.
+- Add build and production start commands when required.
 
 ## Current Project Structure
 
@@ -64,9 +87,17 @@ mcp-Notes-FAQ-Search-MCP-server/
 │   └── check-schemas.ts
 ├── src/
 │   ├── schemas/
-│   │   ├── search-notes.ts
+│   │   ├── add-note.ts
+│   │   ├── get-note.ts
+│   │   ├── list-notes.ts
 │   │   ├── search-faqs.ts
-│   │   └── get-note.ts
+│   │   └── search-notes.ts
+│   ├── tools/
+│   │   ├── add-note.ts
+│   │   ├── get-note.ts
+│   │   ├── list-notes.ts
+│   │   ├── search-faqs.ts
+│   │   └── search-notes.ts
 │   └── index.ts
 ├── .gitignore
 ├── README.md
@@ -77,12 +108,12 @@ mcp-Notes-FAQ-Search-MCP-server/
 
 ## Prerequisites
 
-Before running the project checks, make sure the following are installed:
+Before running the project, make sure the following are installed:
 
-- Node.js
+- Node.js 20 or later
 - npm
 
-You can check the installed versions using:
+Check the installed versions using:
 
 ```bash
 node --version
@@ -112,17 +143,21 @@ Run the TypeScript checker:
 npm run typecheck
 ```
 
-This command checks the TypeScript files without generating build output.
+This command validates the TypeScript files without generating build output.
 
 ## Zod Schema Validation
 
-Run the local schema sanity checks:
+Run the local P0 schema sanity checks:
 
 ```bash
 npm run check:schemas
 ```
 
-The validation script tests the three P0 schemas using valid and invalid inputs.
+The script checks valid and invalid inputs for:
+
+- `search_notes`
+- `search_faqs`
+- `get_note`
 
 A successful run should end with:
 
@@ -132,63 +167,69 @@ All P0 schema checks passed.
 
 ## Zod Schemas
 
-The current input schemas are located in:
+Tool input schemas are located in:
 
 ```text
 src/schemas/
 ```
 
-### `search_notes`
+The current schemas are:
 
-File:
+- `search-notes.ts`
+- `search-faqs.ts`
+- `get-note.ts`
+- `list-notes.ts`
+- `add-note.ts`
 
-```text
-src/schemas/search-notes.ts
-```
+## Week 2 Multi-tool Server Skeleton
 
-Validates:
-
-- A required search query.
-- Query length limits.
-- An optional result limit.
-- A positive integer result limit with a maximum value.
-
-### `search_faqs`
-
-File:
+Each planned tool has its own register function inside:
 
 ```text
-src/schemas/search-faqs.ts
+src/tools/
 ```
 
-Validates:
-
-- A required FAQ search query.
-- Query length limits.
-- An optional result limit.
-- A positive integer result limit with a maximum value.
-
-### `get_note`
-
-File:
+The server factory is located in:
 
 ```text
-src/schemas/get-note.ts
+src/index.ts
 ```
 
-Validates:
+The `createServer()` function creates a fresh `McpServer` instance and registers all five planned tools.
 
-- A required note ID.
-- Empty note IDs.
-- The maximum note ID length.
+The server uses stdio transport through:
 
-## Running the MCP Server
+```ts
+void serveStdio(createServer);
+```
 
-The MCP tool handlers and server registration are still under development.
+Server logs are written using `console.error` because stdout is reserved for the MCP protocol.
 
-The build, server start, and MCP Inspector commands will be added after the tools are implemented and registered in the server.
+## Running the MCP Server in Development
 
-The planned commands are:
+Start the server using:
+
+```bash
+npm run dev
+```
+
+A successful start should show:
+
+```text
+notes-faq-search-mcp MCP server running on stdio
+```
+
+The process then remains active while waiting for stdio input.
+
+Stop the server using:
+
+```text
+Ctrl+C
+```
+
+## Commands Not Added Yet
+
+The following commands are not available yet:
 
 ```bash
 npm run build
@@ -196,20 +237,32 @@ npm start
 npm run inspect
 ```
 
-These commands should not be used until their scripts are added to `package.json`.
+They will be added only when the corresponding build, production start, and MCP Inspector setup is implemented.
 
 ## Offline Operation
 
-The final project will store and search its notes and FAQ data locally. It will not require paid APIs, cloud storage, or an internet connection while running.
+The final project will store and search notes and FAQ data locally.
+
+It will not require paid APIs, cloud storage, hosted AI models, or an internet connection while running.
+
+The current stub handlers do not access external services.
 
 ## Project Status
 
 - [x] Project selected
 - [x] Project design completed
 - [x] Three P0 tools defined
-- [x] Zod schemas added for all P0 tools
-- [x] Local schema checks added
-- [ ] Local notes and FAQ data added
-- [ ] Tool handlers implemented
-- [ ] Tools registered in the MCP server
+- [x] Two P1 tools defined
+- [x] P0 Zod schemas added
+- [x] P1 Zod schemas added
+- [x] Local P0 schema checks added
+- [x] MCP server factory added
+- [x] Stdio server setup added
+- [x] All planned tools registered
+- [x] Placeholder handlers added
+- [x] Development server command added
+- [ ] Local notes data added
+- [ ] Local FAQ data added
+- [ ] Real P0 handlers implemented
+- [ ] Error handling implemented
 - [ ] MCP Inspector testing completed
