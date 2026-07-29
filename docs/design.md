@@ -66,3 +66,8 @@ This design must be reviewed and approved by the mentor before Week 3 data wirin
 Current status: **Approved**
 
 The project design was reviewed and approved by the mentor.
+
+## 8. Notes from reading the Memory server
+
+- The Memory server uses `snake_case` tool names that start with action verbs, including `create_entities`, `add_observations`, `delete_entities`, `read_graph`, `search_nodes`, and `open_nodes`.
+- The server separates different operations into focused tools for creating, adding, deleting, reading, searching, and retrieving knowledge graph data.
