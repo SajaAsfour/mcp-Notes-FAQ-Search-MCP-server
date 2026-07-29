@@ -66,3 +66,12 @@ This design must be reviewed and approved by the mentor before Week 3 data wirin
 Current status: **Approved**
 
 The project design was reviewed and approved by the mentor.
+
+## 8. Notes from reading the Memory server
+
+- The Memory server uses `snake_case` tool names that start with action verbs, including `create_entities`, `add_observations`, `delete_entities`, `read_graph`, `search_nodes`, and `open_nodes`.
+- The server separates different operations into focused tools for creating, adding, deleting, reading, searching, and retrieving knowledge graph data.
+
+- Each tool is documented with a short description followed by its input name, type, and required object fields.
+- The README clearly documents special behavior, such as ignoring existing entities, skipping duplicate relations, failing when an entity is missing, and silently skipping some missing deletion targets.
+- The search and retrieval tools explain what they inspect and return: `search_nodes` searches entity names, entity types, and observation content, while `open_nodes` retrieves requested nodes and their relations.
