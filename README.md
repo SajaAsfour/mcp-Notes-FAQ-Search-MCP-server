@@ -16,13 +16,11 @@ The goal of this project is to help students and other users quickly search thei
 
 ## Current Stage
 
-Week 2 — Skeleton demo in MCP Inspector completed.
+Week 3 â€” Data sources selected and local fixture data added.
 
-The MCP server registers all five planned tools, and every tool is discoverable through MCP Inspector.
+The project now contains local JSON fixture files for notes and FAQ entries inside `data/`.
 
-Valid sample argument files are available in `examples/`. The three P0 tools accept valid inputs and return placeholder responses, while invalid input is rejected by schema validation before the stub handler runs.
-
-Real local data and search behavior will be implemented in Week 3.
+The three P0 tools are still registered with placeholder handlers. They are not yet connected to the local fixture files, and real search and retrieval behavior has not been implemented yet.
 
 ## Tool Inventory
 
@@ -30,9 +28,9 @@ Real local data and search behavior will be implemented in Week 3.
 
 The following tools are required for the Demo Day workflow:
 
-- `search_notes` — searches locally stored notes using a text query.
-- `search_faqs` — searches locally stored FAQ questions and answers.
-- `get_note` — retrieves one complete note using its unique ID.
+- `search_notes` â€” searches locally stored notes using a text query.
+- `search_faqs` â€” searches locally stored FAQ questions and answers.
+- `get_note` â€” retrieves one complete note using its unique ID.
 
 The P0 tools are registered and currently return placeholder JSON responses.
 
@@ -40,8 +38,8 @@ The P0 tools are registered and currently return placeholder JSON responses.
 
 The following tools are optional planned features:
 
-- `list_notes` — lists available notes with optional tag filtering.
-- `add_note` — adds a new note to the local collection.
+- `list_notes` â€” lists available notes with optional tag filtering.
+- `add_note` â€” adds a new note to the local collection.
 
 The P1 tools are registered but currently return a `Not implemented yet` response.
 
@@ -54,7 +52,7 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Added Zod input schemas for all planned tools.
 - Added descriptions and validation rules for tool inputs.
 - Added a local script for testing the three P0 schemas.
-- Added an example input for the `get_note` tool.
+- Added one valid example input for every planned tool.
 - Added the MCP server dependency.
 - Added a `createServer()` factory.
 - Added one register function per tool.
@@ -63,53 +61,77 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Added a development command for running the server.
 - Confirmed that TypeScript and schema checks pass.
 - Confirmed that the MCP server starts successfully over stdio.
+- Verified all five planned tools using MCP Inspector.
+- Selected local JSON files as the data source for all P0 tools.
+- Added local fixture notes in `data/notes.json`.
+- Added local FAQ entries in `data/faqs.json`.
 
 ## Planned Features
 
-- Add local fixture data for notes.
-- Add local fixture data for FAQ entries.
+- Connect `search_notes` to the local notes fixture.
+- Connect `search_faqs` to the local FAQ fixture.
+- Connect `get_note` to the local notes fixture.
 - Implement keyword-based note searching.
 - Implement FAQ searching.
 - Retrieve complete notes by ID.
+- Add search normalization and relevance scoring.
 - Add clear errors for missing notes.
+- Validate local fixture data when the server starts.
 - Replace placeholder handlers with real local data handlers.
 - Test the completed P0 workflow in MCP Inspector.
 - Add build and production start commands when required.
+
+## Week 3 Data Sources
+
+All three P0 tools use local JSON fixture files:
+
+- `search_notes` will read from `data/notes.json`.
+- `get_note` will read from `data/notes.json`.
+- `search_faqs` will read from `data/faqs.json`.
+
+The project does not use an external API, paid API key, cloud database, or hosted search service.
+
+Because the primary data source is stored inside the repository, the Demo Day workflow can continue working when Wi-Fi is unavailable.
+
+The current P0 handlers have not yet been connected to these files.
 
 ## Current Project Structure
 
 ```text
 mcp-Notes-FAQ-Search-MCP-server/
-├── docs/
-│   ├── design.md
-│   └── project-choice.md
-├── examples/
-│   ├── add_note.json
-│   ├── get_note.json
-│   ├── list_notes.json
-│   ├── search_faqs.json
-│   └── search_notes.json
-├── scripts/
-│   └── check-schemas.ts
-├── src/
-│   ├── schemas/
-│   │   ├── add-note.ts
-│   │   ├── get-note.ts
-│   │   ├── list-notes.ts
-│   │   ├── search-faqs.ts
-│   │   └── search-notes.ts
-│   ├── tools/
-│   │   ├── add-note.ts
-│   │   ├── get-note.ts
-│   │   ├── list-notes.ts
-│   │   ├── search-faqs.ts
-│   │   └── search-notes.ts
-│   └── index.ts
-├── .gitignore
-├── README.md
-├── package.json
-├── package-lock.json
-└── tsconfig.json
+â”œâ”€â”€ data/
+â”‚   â”œâ”€â”€ faqs.json
+â”‚   â””â”€â”€ notes.json
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ design.md
+â”‚   â””â”€â”€ project-choice.md
+â”œâ”€â”€ examples/
+â”‚   â”œâ”€â”€ add_note.json
+â”‚   â”œâ”€â”€ get_note.json
+â”‚   â”œâ”€â”€ list_notes.json
+â”‚   â”œâ”€â”€ search_faqs.json
+â”‚   â””â”€â”€ search_notes.json
+â”œâ”€â”€ scripts/
+â”‚   â””â”€â”€ check-schemas.ts
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ schemas/
+â”‚   â”‚   â”œâ”€â”€ add-note.ts
+â”‚   â”‚   â”œâ”€â”€ get-note.ts
+â”‚   â”‚   â”œâ”€â”€ list-notes.ts
+â”‚   â”‚   â”œâ”€â”€ search-faqs.ts
+â”‚   â”‚   â””â”€â”€ search-notes.ts
+â”‚   â”œâ”€â”€ tools/
+â”‚   â”‚   â”œâ”€â”€ add-note.ts
+â”‚   â”‚   â”œâ”€â”€ get-note.ts
+â”‚   â”‚   â”œâ”€â”€ list-notes.ts
+â”‚   â”‚   â”œâ”€â”€ search-faqs.ts
+â”‚   â”‚   â””â”€â”€ search-notes.ts
+â”‚   â””â”€â”€ index.ts
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ README.md
+â”œâ”€â”€ package.json
+â”œâ”€â”€ package-lock.json
+â””â”€â”€ tsconfig.json
 ```
 
 ## Prerequisites
@@ -170,6 +192,24 @@ A successful run should end with:
 ```text
 All P0 schema checks passed.
 ```
+
+## Local Fixture Data
+
+Local notes are stored in:
+
+```text
+data/notes.json
+```
+
+Local FAQ entries are stored in:
+
+```text
+data/faqs.json
+```
+
+The files are valid JSON fixtures committed to the repository.
+
+They are not yet connected to the P0 Tool handlers.
 
 ## Zod Schemas
 
@@ -232,6 +272,7 @@ Stop the server using:
 ```text
 Ctrl+C
 ```
+
 ## MCP Inspector Skeleton Demo
 
 The registered tools can be tested using MCP Inspector.
@@ -263,6 +304,8 @@ During the Week 2 skeleton demo:
 - Placeholder responses were returned successfully.
 - A `search_notes` call without the required `query` field was rejected by schema validation.
 
+This Inspector proof covers the Week 2 placeholder handlers only. Real local-data behavior has not yet been tested.
+
 ## Commands Not Added Yet
 
 The following commands are not available yet:
@@ -277,11 +320,11 @@ They will be added only when the corresponding build, production start, and MCP 
 
 ## Offline Operation
 
-The final project will store and search notes and FAQ data locally.
+The notes and FAQ fixture data is stored locally inside the repository.
 
-It will not require paid APIs, cloud storage, hosted AI models, or an internet connection while running.
+The project does not require paid APIs, API keys, cloud storage, hosted AI models, or an internet connection to access the fixture files.
 
-The current stub handlers do not access external services.
+The current P0 Tool handlers still return placeholder responses and do not yet read the fixture data.
 
 ## Project Status
 
@@ -302,8 +345,9 @@ The current stub handlers do not access external services.
 - [x] Valid P0 calls verified in MCP Inspector
 - [x] Invalid input rejection verified
 - [x] Week 2 Inspector proof completed
-- [ ] Local notes data added
-- [ ] Local FAQ data added
+- [x] Local notes data added
+- [x] Local FAQ data added
+- [ ] Local fixture validation added to the server
 - [ ] Real P0 handlers implemented
-- [ ] Error handling implemented
+- [ ] Missing-note error handling implemented
 - [ ] Real local-data handlers tested in MCP Inspector
