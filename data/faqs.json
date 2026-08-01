@@ -1,0 +1,32 @@
+[
+  {
+    "id": "faq-001",
+    "question": "What is an MCP tool?",
+    "answer": "An MCP tool is a focused operation that an MCP client can call with validated input arguments."
+  },
+  {
+    "id": "faq-002",
+    "question": "What is an MCP resource?",
+    "answer": "An MCP resource exposes information that a client can read, such as local files, documentation, or stored application data."
+  },
+  {
+    "id": "faq-003",
+    "question": "What is MCP Inspector used for?",
+    "answer": "MCP Inspector is used to discover registered tools, inspect their schemas, call them with test inputs, and review their responses."
+  },
+  {
+    "id": "faq-004",
+    "question": "Why does this project use local fixture data?",
+    "answer": "Local fixture data allows the project to run reliably without paid APIs, API keys, cloud services, or an internet connection."
+  },
+  {
+    "id": "faq-005",
+    "question": "Why should tool inputs be validated?",
+    "answer": "Input validation rejects missing or invalid values before the tool handler runs and helps the server return predictable results."
+  },
+  {
+    "id": "faq-006",
+    "question": "Why should development work use separate Git branches?",
+    "answer": "Separate branches keep changes focused, allow another team member to review the work, and reduce the risk of changing main directly."
+  }
+]
