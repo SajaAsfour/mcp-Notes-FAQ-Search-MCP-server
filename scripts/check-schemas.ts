@@ -1,4 +1,10 @@
+import { readDataFile } from "../src/lib/read-data-file.js";
+import { faqDataSchema, faqsDataSchema } from "../src/schemas/faq-data.js";
 import { getNoteInputSchema } from "../src/schemas/get-note.js";
+import {
+  noteDataSchema,
+  notesDataSchema,
+} from "../src/schemas/note-data.js";
 import { searchFaqsInputSchema } from "../src/schemas/search-faqs.js";
 import { searchNotesInputSchema } from "../src/schemas/search-notes.js";
 
@@ -30,18 +36,116 @@ const invalidFaqLimit = searchFaqsInputSchema.safeParse({
 });
 
 if (emptyNoteId.success) {
-  throw new Error("The get_note schema accepted an empty note ID.");
+  throw new Error(
+    "The get_note schema accepted an empty note ID.",
+  );
 }
 
 if (emptySearchQuery.success) {
-  throw new Error("The search_notes schema accepted an empty query.");
+  throw new Error(
+    "The search_notes schema accepted an empty query.",
+  );
 }
 
 if (invalidFaqLimit.success) {
-  throw new Error("The search_faqs schema accepted a limit greater than 20.");
+  throw new Error(
+    "The search_faqs schema accepted a limit greater than 20.",
+  );
+}
+
+const validNotesData = await readDataFile(
+  "notes.json",
+  notesDataSchema,
+);
+
+const validFaqsData = await readDataFile(
+  "faqs.json",
+  faqsDataSchema,
+);
+
+const invalidNoteShape = noteDataSchema.safeParse({
+  id: "note-invalid",
+  title: "Invalid note",
+});
+
+const invalidFaqShape = faqDataSchema.safeParse({
+  id: "faq-invalid",
+  question: "",
+  answer: "Example answer",
+});
+
+const duplicateNotes = notesDataSchema.safeParse([
+  {
+    id: "note-duplicate",
+    title: "First duplicate",
+    content: "First duplicate note.",
+    tags: ["test"],
+    created_at: "2026-08-01T00:00:00.000Z",
+  },
+  {
+    id: "note-duplicate",
+    title: "Second duplicate",
+    content: "Second duplicate note.",
+    tags: ["test"],
+    created_at: "2026-08-02T00:00:00.000Z",
+  },
+]);
+
+const duplicateFaqs = faqsDataSchema.safeParse([
+  {
+    id: "faq-duplicate",
+    question: "First question?",
+    answer: "First answer.",
+  },
+  {
+    id: "faq-duplicate",
+    question: "Second question?",
+    answer: "Second answer.",
+  },
+]);
+
+if (invalidNoteShape.success) {
+  throw new Error(
+    "The note data schema accepted a note with missing fields.",
+  );
+}
+
+if (invalidFaqShape.success) {
+  throw new Error(
+    "The FAQ data schema accepted an empty question.",
+  );
+}
+
+if (duplicateNotes.success) {
+  throw new Error(
+    "The notes data schema accepted duplicate note IDs.",
+  );
+}
+
+if (duplicateFaqs.success) {
+  throw new Error(
+    "The FAQ data schema accepted duplicate FAQ IDs.",
+  );
+}
+
+let unsafePathWasRejected = false;
+
+try {
+  await readDataFile("../package.json", notesDataSchema);
+} catch {
+  unsafePathWasRejected = true;
+}
+
+if (!unsafePathWasRejected) {
+  throw new Error(
+    "The data file reader accepted a path outside the data directory.",
+  );
 }
 
 console.log("search_notes valid:", validSearchNotes);
 console.log("search_faqs valid:", validSearchFaqs);
 console.log("get_note valid:", validGetNote);
-console.log("All P0 schema checks passed.");
+console.log("notes data valid:", validNotesData.length);
+console.log("FAQ data valid:", validFaqsData.length);
+console.log("Unsafe data path rejected.");
+console.log("All P0 input and file schema checks passed.");
