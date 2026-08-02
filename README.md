@@ -16,11 +16,20 @@ The goal of this project is to help students and other users quickly search thei
 
 ## Current Stage
 
-Week 3 â€” Data sources selected and local fixture data added.
+Week 3 — Safe local data loading and real P0 handlers implemented.
 
-The project now contains local JSON fixture files for notes and FAQ entries inside `data/`.
+The P0 tools now read the local fixture files through a shared safe data loader. File paths are restricted to the repository `data` directory, JSON payloads are parsed as unknown values, and Zod validates every file payload before it is used.
 
-The three P0 tools are still registered with placeholder handlers. They are not yet connected to the local fixture files, and real search and retrieval behavior has not been implemented yet.
+- `search_notes` performs normalized keyword matching over local notes.
+- `search_faqs` performs normalized keyword matching over local FAQ entries.
+- `get_note` retrieves one complete note by its ID.
+- Searches with no matches return successful responses with empty `results` arrays.
+- Internal failures are logged to stderr with the tool name and reason.
+- Users receive short error messages instead of raw internal errors.
+
+The project remains fully offline. The shared `src/lib/http.ts` timeout helper is included for the Academy requirement but is not used by the current P0 handlers.
+
+Real local-data MCP Inspector verification is still pending.
 
 ## Tool Inventory
 
@@ -28,18 +37,18 @@ The three P0 tools are still registered with placeholder handlers. They are not 
 
 The following tools are required for the Demo Day workflow:
 
-- `search_notes` â€” searches locally stored notes using a text query.
-- `search_faqs` â€” searches locally stored FAQ questions and answers.
-- `get_note` â€” retrieves one complete note using its unique ID.
+- `search_notes` — searches locally stored notes using a text query.
+- `search_faqs` — searches locally stored FAQ questions and answers.
+- `get_note` — retrieves one complete note using its unique ID.
 
-The P0 tools are registered and currently return placeholder JSON responses.
+The P0 tools use validated local JSON fixture data and return real results.
 
 ### P1 Tools
 
 The following tools are optional planned features:
 
-- `list_notes` â€” lists available notes with optional tag filtering.
-- `add_note` â€” adds a new note to the local collection.
+- `list_notes` — lists available notes with optional tag filtering.
+- `add_note` — adds a new note to the local collection.
 
 The P1 tools are registered but currently return a `Not implemented yet` response.
 
@@ -51,7 +60,7 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Defined three P0 tools and two P1 tools.
 - Added Zod input schemas for all planned tools.
 - Added descriptions and validation rules for tool inputs.
-- Added a local script for testing the three P0 schemas.
+- Added a local script for testing the P0 schemas.
 - Added one valid example input for every planned tool.
 - Added the MCP server dependency.
 - Added a `createServer()` factory.
@@ -61,77 +70,103 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Added a development command for running the server.
 - Confirmed that TypeScript and schema checks pass.
 - Confirmed that the MCP server starts successfully over stdio.
-- Verified all five planned tools using MCP Inspector.
+- Verified the Week 2 placeholder server using MCP Inspector.
 - Selected local JSON files as the data source for all P0 tools.
 - Added local fixture notes in `data/notes.json`.
 - Added local FAQ entries in `data/faqs.json`.
+- Added the Week 3 data plan in `docs/data-plan.md`.
+- Added a shared HTTP JSON helper with timeout handling for future HTTP sources.
+- Added safe local file path resolution.
+- Restricted file reads to the repository `data` directory.
+- Added Zod schemas for note and FAQ file payloads.
+- Added duplicate note and FAQ ID validation.
+- Implemented the real `search_notes` handler.
+- Implemented the real `search_faqs` handler.
+- Implemented the real `get_note` handler.
+- Added normalized keyword matching and simple relevance scoring.
+- Added empty search result handling.
+- Added missing-note error handling.
+- Added stderr failure logging and short user-facing errors.
 
 ## Planned Features
 
-- Connect `search_notes` to the local notes fixture.
-- Connect `search_faqs` to the local FAQ fixture.
-- Connect `get_note` to the local notes fixture.
-- Implement keyword-based note searching.
-- Implement FAQ searching.
-- Retrieve complete notes by ID.
-- Add search normalization and relevance scoring.
-- Add clear errors for missing notes.
-- Validate local fixture data when the server starts.
-- Replace placeholder handlers with real local data handlers.
 - Test the completed P0 workflow in MCP Inspector.
+- Improve search ranking if needed.
+- Complete the optional P1 tools.
 - Add build and production start commands when required.
 
 ## Week 3 Data Sources
 
 All three P0 tools use local JSON fixture files:
 
-- `search_notes` will read from `data/notes.json`.
-- `get_note` will read from `data/notes.json`.
-- `search_faqs` will read from `data/faqs.json`.
+- `search_notes` reads from `data/notes.json`.
+- `get_note` reads from `data/notes.json`.
+- `search_faqs` reads from `data/faqs.json`.
 
 The project does not use an external API, paid API key, cloud database, or hosted search service.
 
 Because the primary data source is stored inside the repository, the Demo Day workflow can continue working when Wi-Fi is unavailable.
 
-The current P0 handlers have not yet been connected to these files.
+## Safe Fetching and Parsing
+
+Task 3.3 adds shared safety rules for external and file data:
+
+1. Resolve local fixture paths inside the repository `data` directory.
+2. Reject absolute paths and paths containing `..`.
+3. Read the file as text.
+4. Parse the JSON payload as an unknown value.
+5. Validate the parsed payload with Zod.
+6. Use the data only after successful validation.
+7. Return successful empty search results when no matches are found.
+8. Log internal failures to stderr using the tool name and reason.
+9. Return short user-facing errors instead of raw internal details.
+
+The shared HTTP helper uses `AbortSignal.timeout(timeoutMs)` and throws a clear error for non-successful HTTP responses. It is available for future HTTP data sources but is not called by the current offline tools.
 
 ## Current Project Structure
 
 ```text
 mcp-Notes-FAQ-Search-MCP-server/
-â”œâ”€â”€ data/
-â”‚   â”œâ”€â”€ faqs.json
-â”‚   â””â”€â”€ notes.json
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ design.md
-â”‚   â””â”€â”€ project-choice.md
-â”œâ”€â”€ examples/
-â”‚   â”œâ”€â”€ add_note.json
-â”‚   â”œâ”€â”€ get_note.json
-â”‚   â”œâ”€â”€ list_notes.json
-â”‚   â”œâ”€â”€ search_faqs.json
-â”‚   â””â”€â”€ search_notes.json
-â”œâ”€â”€ scripts/
-â”‚   â””â”€â”€ check-schemas.ts
-â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ schemas/
-â”‚   â”‚   â”œâ”€â”€ add-note.ts
-â”‚   â”‚   â”œâ”€â”€ get-note.ts
-â”‚   â”‚   â”œâ”€â”€ list-notes.ts
-â”‚   â”‚   â”œâ”€â”€ search-faqs.ts
-â”‚   â”‚   â””â”€â”€ search-notes.ts
-â”‚   â”œâ”€â”€ tools/
-â”‚   â”‚   â”œâ”€â”€ add-note.ts
-â”‚   â”‚   â”œâ”€â”€ get-note.ts
-â”‚   â”‚   â”œâ”€â”€ list-notes.ts
-â”‚   â”‚   â”œâ”€â”€ search-faqs.ts
-â”‚   â”‚   â””â”€â”€ search-notes.ts
-â”‚   â””â”€â”€ index.ts
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ README.md
-â”œâ”€â”€ package.json
-â”œâ”€â”€ package-lock.json
-â””â”€â”€ tsconfig.json
+├── data/
+│   ├── faqs.json
+│   └── notes.json
+├── docs/
+│   ├── data-plan.md
+│   ├── design.md
+│   └── project-choice.md
+├── examples/
+│   ├── add_note.json
+│   ├── get_note.json
+│   ├── list_notes.json
+│   ├── search_faqs.json
+│   └── search_notes.json
+├── scripts/
+│   └── check-schemas.ts
+├── src/
+│   ├── lib/
+│   │   ├── http.ts
+│   │   ├── read-data-file.ts
+│   │   └── search.ts
+│   ├── schemas/
+│   │   ├── add-note.ts
+│   │   ├── faq-data.ts
+│   │   ├── get-note.ts
+│   │   ├── list-notes.ts
+│   │   ├── note-data.ts
+│   │   ├── search-faqs.ts
+│   │   └── search-notes.ts
+│   ├── tools/
+│   │   ├── add-note.ts
+│   │   ├── get-note.ts
+│   │   ├── list-notes.ts
+│   │   ├── search-faqs.ts
+│   │   └── search-notes.ts
+│   └── index.ts
+├── .gitignore
+├── README.md
+├── package.json
+├── package-lock.json
+└── tsconfig.json
 ```
 
 ## Prerequisites
@@ -173,24 +208,28 @@ npm run typecheck
 
 This command validates the TypeScript files without generating build output.
 
-## Zod Schema Validation
+## Zod and Fixture Validation
 
-Run the local P0 schema sanity checks:
+Run the local schema and fixture checks:
 
 ```bash
 npm run check:schemas
 ```
 
-The script checks valid and invalid inputs for:
+The script checks:
 
-- `search_notes`
-- `search_faqs`
-- `get_note`
+- Valid and invalid inputs for `search_notes`.
+- Valid and invalid inputs for `search_faqs`.
+- Valid and invalid inputs for `get_note`.
+- The shape of `data/notes.json`.
+- The shape of `data/faqs.json`.
+- Duplicate note and FAQ IDs.
+- Rejection of unsafe file paths.
 
 A successful run should end with:
 
 ```text
-All P0 schema checks passed.
+All P0 input and file schema checks passed.
 ```
 
 ## Local Fixture Data
@@ -207,13 +246,11 @@ Local FAQ entries are stored in:
 data/faqs.json
 ```
 
-The files are valid JSON fixtures committed to the repository.
-
-They are not yet connected to the P0 Tool handlers.
+The files are committed to the repository, parsed as JSON, and validated with Zod before the P0 tools use them.
 
 ## Zod Schemas
 
-Tool input schemas are located in:
+Tool input schemas and local file payload schemas are located in:
 
 ```text
 src/schemas/
@@ -226,8 +263,26 @@ The current schemas are:
 - `get-note.ts`
 - `list-notes.ts`
 - `add-note.ts`
+- `note-data.ts`
+- `faq-data.ts`
 
-## Week 2 Multi-tool Server Skeleton
+There is no `src/schemas/index.ts` file.
+
+## Search Behavior
+
+The search tools:
+
+- Normalize the query and searchable text.
+- Split the query into distinct search terms.
+- Match terms against note or FAQ fields.
+- Calculate a simple relevance score.
+- Order results by score.
+- Apply the requested result limit.
+- Return an empty `results` array with a short message when no matches are found.
+
+This is simple keyword matching and not semantic or AI-based search.
+
+## MCP Server Setup
 
 Each planned tool has its own register function inside:
 
@@ -273,17 +328,15 @@ Stop the server using:
 Ctrl+C
 ```
 
-## MCP Inspector Skeleton Demo
+## MCP Inspector
 
-The registered tools can be tested using MCP Inspector.
-
-Run the Inspector from the project root:
+Run MCP Inspector from the project root:
 
 ```bash
 npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 ```
 
-The Inspector should list the following tools:
+The Inspector should list:
 
 - `search_notes`
 - `search_faqs`
@@ -291,24 +344,19 @@ The Inspector should list the following tools:
 - `list_notes`
 - `add_note`
 
-Valid sample arguments for every tool are available inside:
+Valid sample arguments are available inside:
 
 ```text
 examples/
 ```
 
-During the Week 2 skeleton demo:
+The Week 2 Inspector proof verified tool discovery, input validation, and placeholder responses.
 
-- All five planned tools were discoverable.
-- The three P0 tools accepted valid sample inputs.
-- Placeholder responses were returned successfully.
-- A `search_notes` call without the required `query` field was rejected by schema validation.
-
-This Inspector proof covers the Week 2 placeholder handlers only. Real local-data behavior has not yet been tested.
+Real local-data verification for the Week 3 P0 handlers must still be completed before this README claims that the final workflow passed Inspector testing.
 
 ## Commands Not Added Yet
 
-The following commands are not available yet:
+The following commands are not available:
 
 ```bash
 npm run build
@@ -316,15 +364,13 @@ npm start
 npm run inspect
 ```
 
-They will be added only when the corresponding build, production start, and MCP Inspector setup is implemented.
+They will be added only when the corresponding build, production start, and Inspector scripts are implemented.
 
 ## Offline Operation
 
 The notes and FAQ fixture data is stored locally inside the repository.
 
-The project does not require paid APIs, API keys, cloud storage, hosted AI models, or an internet connection to access the fixture files.
-
-The current P0 Tool handlers still return placeholder responses and do not yet read the fixture data.
+The project does not require paid APIs, API keys, cloud storage, hosted AI models, or an internet connection to access and search the fixture files.
 
 ## Project Status
 
@@ -332,22 +378,25 @@ The current P0 Tool handlers still return placeholder responses and do not yet r
 - [x] Project design completed
 - [x] Three P0 tools defined
 - [x] Two P1 tools defined
-- [x] P0 Zod schemas added
-- [x] P1 Zod schemas added
+- [x] P0 Zod input schemas added
+- [x] P1 Zod input schemas added
 - [x] Local P0 schema checks added
 - [x] MCP server factory added
 - [x] Stdio server setup added
 - [x] All planned tools registered
-- [x] Placeholder handlers added
+- [x] Placeholder handlers added for the Week 2 skeleton
 - [x] Development server command added
 - [x] One valid JSON example added for every planned tool
-- [x] All planned tools discovered in MCP Inspector
-- [x] Valid P0 calls verified in MCP Inspector
-- [x] Invalid input rejection verified
 - [x] Week 2 Inspector proof completed
 - [x] Local notes data added
 - [x] Local FAQ data added
-- [ ] Local fixture validation added to the server
-- [ ] Real P0 handlers implemented
-- [ ] Missing-note error handling implemented
+- [x] Week 3 data plan added
+- [x] Safe local file loading added
+- [x] Note and FAQ fixture schemas added
+- [x] Duplicate ID validation added
+- [x] Real P0 handlers implemented
+- [x] Empty search result handling implemented
+- [x] Missing-note error handling implemented
+- [x] Short user-facing error handling implemented
 - [ ] Real local-data handlers tested in MCP Inspector
+- [ ] Optional P1 handlers implemented
