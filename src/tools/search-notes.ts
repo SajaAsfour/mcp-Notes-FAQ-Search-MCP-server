@@ -1,12 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
-import { readDataFile } from "../lib/read-data-file.js";
 import {
-  calculateSearchScore,
-  createExcerpt,
-  getSearchTerms,
-} from "../lib/search.js";
-import { notesDataSchema } from "../schemas/note-data.js";
+  loadNotes,
+  searchNotes,
+} from "../lib/notes.js";
 import { searchNotesInputSchema } from "../schemas/search-notes.js";
 
 export function registerSearchNotesTool(server: McpServer): void {
@@ -19,38 +16,12 @@ export function registerSearchNotesTool(server: McpServer): void {
     },
     async (input) => {
       try {
-        const notes = await readDataFile(
-          "notes.json",
-          notesDataSchema,
+        const notes = await loadNotes();
+        const results = searchNotes(
+          notes,
+          input.query,
+          input.limit ?? 5,
         );
-
-        const searchTerms = getSearchTerms(input.query);
-        const limit = input.limit ?? 5;
-
-        const results = notes
-          .map((note) => {
-            const score = calculateSearchScore(searchTerms, [
-              note.title,
-              note.content,
-              note.tags.join(" "),
-            ]);
-
-            return {
-              id: note.id,
-              title: note.title,
-              excerpt: createExcerpt(note.content),
-              tags: note.tags,
-              created_at: note.created_at,
-              score,
-            };
-          })
-          .filter((note) => note.score > 0)
-          .sort(
-            (firstNote, secondNote) =>
-              secondNote.score - firstNote.score ||
-              firstNote.title.localeCompare(secondNote.title),
-          )
-          .slice(0, limit);
 
         return {
           content: [
