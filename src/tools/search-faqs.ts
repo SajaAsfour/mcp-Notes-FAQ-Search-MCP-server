@@ -1,11 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
-import { readDataFile } from "../lib/read-data-file.js";
 import {
-  calculateSearchScore,
-  getSearchTerms,
-} from "../lib/search.js";
-import { faqsDataSchema } from "../schemas/faq-data.js";
+  loadFaqs,
+  searchFaqs,
+} from "../lib/faqs.js";
 import { searchFaqsInputSchema } from "../schemas/search-faqs.js";
 
 export function registerSearchFaqsTool(server: McpServer): void {
@@ -18,37 +16,12 @@ export function registerSearchFaqsTool(server: McpServer): void {
     },
     async (input) => {
       try {
-        const faqs = await readDataFile(
-          "faqs.json",
-          faqsDataSchema,
+        const faqs = await loadFaqs();
+        const results = searchFaqs(
+          faqs,
+          input.query,
+          input.limit ?? 5,
         );
-
-        const searchTerms = getSearchTerms(input.query);
-        const limit = input.limit ?? 5;
-
-        const results = faqs
-          .map((faq) => {
-            const score = calculateSearchScore(searchTerms, [
-              faq.question,
-              faq.answer,
-            ]);
-
-            return {
-              id: faq.id,
-              question: faq.question,
-              answer: faq.answer,
-              score,
-            };
-          })
-          .filter((faq) => faq.score > 0)
-          .sort(
-            (firstFaq, secondFaq) =>
-              secondFaq.score - firstFaq.score ||
-              firstFaq.question.localeCompare(
-                secondFaq.question,
-              ),
-          )
-          .slice(0, limit);
 
         return {
           content: [
@@ -63,7 +36,7 @@ export function registerSearchFaqsTool(server: McpServer): void {
                   results,
                   message:
                     results.length === 0
-                      ? "No matching FAQ entries were found."
+                      ? "No matching FAQs were found."
                       : `Found ${results.length} matching FAQ entr${
                           results.length === 1 ? "y" : "ies"
                         }.`,
