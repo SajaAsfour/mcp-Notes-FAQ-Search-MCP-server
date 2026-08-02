@@ -1,8 +1,10 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
-import { readDataFile } from "../lib/read-data-file.js";
+import {
+  getNoteById,
+  loadNotes,
+} from "../lib/notes.js";
 import { getNoteInputSchema } from "../schemas/get-note.js";
-import { notesDataSchema } from "../schemas/note-data.js";
 
 export function registerGetNoteTool(server: McpServer): void {
   server.registerTool(
@@ -14,14 +16,8 @@ export function registerGetNoteTool(server: McpServer): void {
     },
     async (input) => {
       try {
-        const notes = await readDataFile(
-          "notes.json",
-          notesDataSchema,
-        );
-
-        const note = notes.find(
-          (currentNote) => currentNote.id === input.note_id,
-        );
+        const notes = await loadNotes();
+        const note = getNoteById(notes, input.note_id);
 
         if (!note) {
           console.error(
