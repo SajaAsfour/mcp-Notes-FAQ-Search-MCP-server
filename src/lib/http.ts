@@ -1,0 +1,18 @@
+export async function fetchJson(
+  url: string,
+  { timeoutMs = 8000 }: { timeoutMs?: number } = {},
+): Promise<unknown> {
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Request to ${url} failed with status ${response.status}`,
+    );
+  }
+
+  const payload: unknown = await response.json();
+
+  return payload;
+}
