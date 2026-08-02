@@ -16,18 +16,17 @@ The goal of this project is to help students and other users quickly search thei
 
 ## Current Stage
 
-Week 3 — Safe local data loading and real P0 handlers implemented.
+Week 3 — Real local fixture data is wired into all three P0 tools.
 
-The P0 tools now read the local fixture files through a shared safe data loader. File paths are restricted to the repository `data` directory, JSON payloads are parsed as unknown values, and Zod validates every file payload before it is used.
+The P0 tools now use validated local JSON data:
 
-- `search_notes` performs normalized keyword matching over local notes.
-- `search_faqs` performs normalized keyword matching over local FAQ entries.
-- `get_note` retrieves one complete note by its ID.
-- Searches with no matches return successful responses with empty `results` arrays.
-- Internal failures are logged to stderr with the tool name and reason.
-- Users receive short error messages instead of raw internal errors.
+- `search_notes` searches `data/notes.json`.
+- `search_faqs` searches `data/faqs.json`.
+- `get_note` retrieves a complete note from `data/notes.json`.
 
-The project remains fully offline. The shared `src/lib/http.ts` timeout helper is included for the Academy requirement but is not used by the current P0 handlers.
+Data loading, searching, and filtering logic is kept inside reusable files under `src/lib/`, while the files under `src/tools/` remain focused on MCP tool registration and response formatting.
+
+The P1 tools remain registered stubs and return `Not implemented yet`.
 
 Real local-data MCP Inspector verification is still pending.
 
@@ -87,12 +86,20 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Added empty search result handling.
 - Added missing-note error handling.
 - Added stderr failure logging and short user-facing errors.
+- Added reusable note loading and search functions.
+- Added reusable FAQ loading and search functions.
+- Connected `search_notes` to `data/notes.json`.
+- Connected `search_faqs` to `data/faqs.json`.
+- Connected `get_note` to `data/notes.json`.
+- Added FAQ fixture payload validation.
+- Kept P1 tools as explicit stubs.
 
 ## Planned Features
 
-- Test the completed P0 workflow in MCP Inspector.
-- Improve search ranking if needed.
-- Complete the optional P1 tools.
+- Test all real P0 handlers using MCP Inspector.
+- Capture final Week 3 submission evidence.
+- Improve search ranking if required.
+- Complete the optional P1 tools in a later task.
 - Add build and production start commands when required.
 
 ## Week 3 Data Sources
