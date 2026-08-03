@@ -75,3 +75,13 @@ The project design was reviewed and approved by the mentor.
 - Each tool is documented with a short description followed by its input name, type, and required object fields.
 - The README clearly documents special behavior, such as ignoring existing entities, skipping duplicate relations, failing when an entity is missing, and silently skipping some missing deletion targets.
 - The search and retrieval tools explain what they inspect and return: `search_nodes` searches entity names, entity types, and observation content, while `open_nodes` retrieves requested nodes and their relations.
+
+## 9. MCP Resources
+
+The server exposes read-only MCP resources in addition to its tools.
+
+| resource_name | URI | source | content |
+|---|---|---|---|
+| `notes_index` | `notes://index` | `data/notes.json` | Basic note metadata including ID, title, tags, and creation date. Note content is not included. |
+
+The notes index resource is read-only. It allows an MCP client to inspect the available note collection without calling a tool or receiving complete note content.
