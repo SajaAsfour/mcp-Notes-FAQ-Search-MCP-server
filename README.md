@@ -16,19 +16,16 @@ The goal of this project is to help students and other users quickly search thei
 
 ## Current Stage
 
-Week 3 — Real local fixture data is wired into all three P0 tools.
+Week 3 — Real local fixture data is wired into all three P0 tools and the `list_notes` P1 tool.
 
-The P0 tools now use validated local JSON data:
+The following tools now use validated local JSON data:
 
 - `search_notes` searches `data/notes.json`.
 - `search_faqs` searches `data/faqs.json`.
 - `get_note` retrieves a complete note from `data/notes.json`.
+- `list_notes` returns basic note metadata from `data/notes.json` with optional tag filtering.
 
-Data loading, searching, and filtering logic is kept inside reusable files under `src/lib/`, while the files under `src/tools/` remain focused on MCP tool registration and response formatting.
-
-The P1 tools remain registered stubs and return `Not implemented yet`.
-
-Real local-data MCP Inspector verification is still pending.
+The `add_note` tool remains a registered stub until its separate implementation is completed.
 
 ## Tool Inventory
 
@@ -44,10 +41,8 @@ The P0 tools use validated local JSON fixture data and return real results.
 
 ### P1 Tools
 
-The following tools are optional planned features:
-
-- `list_notes` — lists available notes with optional tag filtering.
-- `add_note` — adds a new note to the local collection.
+- `list_notes` — implemented using validated local note data.
+- `add_note` — registered but still returns `Not implemented yet`.
 
 The P1 tools are registered but currently return a `Not implemented yet` response.
 
@@ -92,14 +87,18 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Connected `search_faqs` to `data/faqs.json`.
 - Connected `get_note` to `data/notes.json`.
 - Added FAQ fixture payload validation.
-- Kept P1 tools as explicit stubs.
+- Implemented the real `list_notes` handler.
+- Added reusable note listing and tag filtering logic.
+- Added valid and invalid `list_notes` schema checks.
+- Connected `list_notes` to `data/notes.json`.
 
 ## Planned Features
 
 - Test all real P0 handlers using MCP Inspector.
 - Capture final Week 3 submission evidence.
 - Improve search ranking if required.
-- Complete the optional P1 tools in a later task.
+- Implement the real `add_note` handler with safe local persistence.
+- Test all five real handlers using MCP Inspector after `add_note` is completed.
 - Add build and production start commands when required.
 
 ## Week 3 Data Sources
@@ -405,5 +404,6 @@ The project does not require paid APIs, API keys, cloud storage, hosted AI model
 - [x] Empty search result handling implemented
 - [x] Missing-note error handling implemented
 - [x] Short user-facing error handling implemented
+- [x] Real `list_notes` handler implemented
+- [ ] Real `add_note` handler implemented
 - [ ] Real local-data handlers tested in MCP Inspector
-- [ ] Optional P1 handlers implemented
