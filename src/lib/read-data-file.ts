@@ -5,8 +5,8 @@ import type { ZodType } from "zod/v4";
 
 const dataDirectory = resolve(process.cwd(), "data");
 
-function resolveDataFilePath(fileName: string): string {
-  const trimmedFileName = fileName.trim();
+export function resolveDataFilePath(fileName: string): string {
+    const trimmedFileName = fileName.trim();
 
   if (!trimmedFileName) {
     throw new Error("Data file name is required.");
