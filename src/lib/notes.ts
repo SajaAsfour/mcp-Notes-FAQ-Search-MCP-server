@@ -18,6 +18,12 @@ export type NoteSearchResult = {
   score: number;
 };
 
+export type NoteListItem = {
+  id: string;
+  title: string;
+  tags: string[];
+};
+
 export async function loadNotes(): Promise<NoteData[]> {
   return readDataFile("notes.json", notesDataSchema);
 }
@@ -61,4 +67,29 @@ export function getNoteById(
   noteId: string,
 ): NoteData | undefined {
   return notes.find((note) => note.id === noteId);
+}
+
+export function listNotes(
+  notes: NoteData[],
+  tag?: string,
+  limit = 5,
+): NoteListItem[] {
+  const resultLimit = Math.min(Math.max(limit, 1), 20);
+  const normalizedTag = tag?.trim().toLowerCase();
+
+  return notes
+    .filter(
+      (note) =>
+        !normalizedTag ||
+        note.tags.some(
+          (currentTag) =>
+            currentTag.toLowerCase() === normalizedTag,
+        ),
+    )
+    .slice(0, resultLimit)
+    .map((note) => ({
+      id: note.id,
+      title: note.title,
+      tags: note.tags,
+    }));
 }
