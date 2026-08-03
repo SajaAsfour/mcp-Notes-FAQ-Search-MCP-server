@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import { serveStdio } from "@modelcontextprotocol/server/stdio";
 
+import { registerFaqResource } from "./resources/faqs.js";
 import { registerNotesIndexResource } from "./resources/notes-index.js";
 import { registerAddNoteTool } from "./tools/add-note.js";
 import { registerGetNoteTool } from "./tools/get-note.js";
@@ -15,6 +16,7 @@ export function createServer(): McpServer {
   });
 
   registerNotesIndexResource(server);
+  registerFaqResource(server);
 
   registerSearchNotesTool(server);
   registerSearchFaqsTool(server);

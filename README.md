@@ -41,6 +41,15 @@ The P1 tools now use real local data:
 - `list_notes` — lists validated local notes with optional tag filtering.
 - `add_note` — validates and safely adds a note to the local collection.
 
+## MCP Resources
+
+The server also exposes two read-only MCP resources:
+
+- `notes://index` — returns basic metadata for the locally stored notes without returning complete note content.
+- `notes://faq` — returns the locally stored FAQ questions and answers.
+
+Resources can be listed and read by an MCP client without calling a tool. They reuse the same safe local JSON loading and validation used by the real tool handlers.
+
 ## Completed Work
 
 - Selected Notes & FAQ Search as the project idea.
@@ -152,9 +161,12 @@ mcp-Notes-FAQ-Search-MCP-server/
 │   └── check-schemas.ts
 ├── src/
 │   ├── lib/
+│   │   ├── faqs.ts
 │   │   ├── http.ts
+│   │   ├── notes.ts
 │   │   ├── read-data-file.ts
-│   │   └── search.ts
+│   │   ├── search.ts
+│   │   └── write-data-file.ts
 │   ├── schemas/
 │   │   ├── add-note.ts
 │   │   ├── faq-data.ts
