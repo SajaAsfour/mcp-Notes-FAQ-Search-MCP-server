@@ -4,7 +4,9 @@ import {
   createExcerpt,
   getSearchTerms,
 } from "./search.js";
+import { writeDataFile } from "./write-data-file.js";
 import {
+  noteDataSchema,
   notesDataSchema,
   type NoteData,
 } from "../schemas/note-data.js";
@@ -24,8 +26,24 @@ export type NoteListItem = {
   tags: string[];
 };
 
+export type NewNoteInput = {
+  title: string;
+  content: string;
+  tags?: string[];
+};
+
 export async function loadNotes(): Promise<NoteData[]> {
   return readDataFile("notes.json", notesDataSchema);
+}
+
+export async function saveNotes(
+  notes: NoteData[],
+): Promise<void> {
+  await writeDataFile(
+    "notes.json",
+    notes,
+    notesDataSchema,
+  );
 }
 
 export function searchNotes(
@@ -92,4 +110,53 @@ export function listNotes(
       title: note.title,
       tags: note.tags,
     }));
+}
+
+function createNextNoteId(
+  notes: NoteData[],
+): string {
+  const usedIds = new Set(
+    notes.map((note) => note.id),
+  );
+
+  let nextNumber =
+    notes.reduce((largestNumber, note) => {
+      const match = /^note-(\d+)$/u.exec(note.id);
+
+      if (!match) {
+        return largestNumber;
+      }
+
+      return Math.max(
+        largestNumber,
+        Number(match[1]),
+      );
+    }, 0) + 1;
+
+  let candidateId: string;
+
+  do {
+    candidateId =
+      `note-${String(nextNumber).padStart(3, "0")}`;
+
+    nextNumber += 1;
+  } while (usedIds.has(candidateId));
+
+  return candidateId;
+}
+
+export function createNote(
+  notes: NoteData[],
+  input: NewNoteInput,
+  createdAt = new Date().toISOString(),
+): NoteData {
+  return noteDataSchema.parse({
+    id: createNextNoteId(notes),
+    title: input.title.trim(),
+    content: input.content.trim(),
+    tags: (input.tags ?? []).map(
+      (tag) => tag.trim(),
+    ),
+    created_at: createdAt,
+  });
 }

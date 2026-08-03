@@ -1,33 +1,80 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
+import {
+  createNote,
+  loadNotes,
+  saveNotes,
+} from "../lib/notes.js";
 import { addNoteInputSchema } from "../schemas/add-note.js";
 
 export function registerAddNoteTool(server: McpServer): void {
   server.registerTool(
     "add_note",
     {
-      description: "Adds a new note to the local note collection",
+      description:
+        "Adds a new note to the local note collection",
       inputSchema: addNoteInputSchema,
     },
     async (input) => {
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                ok: false,
-                stub: true,
-                tool: "add_note",
-                input,
-                message: "Not implemented yet.",
-              },
-              null,
-              2,
-            ),
-          },
-        ],
-      };
+      try {
+        const notes = await loadNotes();
+        const note = createNote(notes, input);
+
+        await saveNotes([
+          ...notes,
+          note,
+        ]);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  ok: true,
+                  tool: "add_note",
+                  success: true,
+                  note: {
+                    id: note.id,
+                    title: note.title,
+                    tags: note.tags,
+                  },
+                  message: "Note added successfully.",
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (error) {
+        const reason =
+          error instanceof Error
+            ? error.message
+            : "Unknown error";
+
+        console.error(`[add_note] ${reason}`);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  ok: false,
+                  tool: "add_note",
+                  success: false,
+                  note: null,
+                  error:
+                    "Unable to add the note to the local collection.",
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
     },
   );
 }

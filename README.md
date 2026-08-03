@@ -14,18 +14,13 @@ The project provides a simple and private way to find information without requir
 
 The goal of this project is to help students and other users quickly search their personal notes and FAQ collections through focused MCP tools.
 
-## Current Stage
-
-Week 3 — Real local fixture data is wired into all three P0 tools and the `list_notes` P1 tool.
-
-The following tools now use validated local JSON data:
+Week 3 — Real local fixture data is wired into all five project tools.
 
 - `search_notes` searches `data/notes.json`.
 - `search_faqs` searches `data/faqs.json`.
 - `get_note` retrieves a complete note from `data/notes.json`.
-- `list_notes` returns basic note metadata from `data/notes.json` with optional tag filtering.
-
-The `add_note` tool remains a registered stub until its separate implementation is completed.
+- `list_notes` returns basic note metadata with optional tag filtering.
+- `add_note` validates and safely writes new notes to `data/notes.json`.
 
 ## Tool Inventory
 
@@ -41,10 +36,10 @@ The P0 tools use validated local JSON fixture data and return real results.
 
 ### P1 Tools
 
-- `list_notes` — implemented using validated local note data.
-- `add_note` — registered but still returns `Not implemented yet`.
+The P1 tools now use real local data:
 
-The P1 tools are registered but currently return a `Not implemented yet` response.
+- `list_notes` — lists validated local notes with optional tag filtering.
+- `add_note` — validates and safely adds a note to the local collection.
 
 ## Completed Work
 
@@ -91,6 +86,13 @@ The P1 tools are registered but currently return a `Not implemented yet` respons
 - Added reusable note listing and tag filtering logic.
 - Added valid and invalid `list_notes` schema checks.
 - Connected `list_notes` to `data/notes.json`.
+- Implemented the real `add_note` handler.
+- Added safe local JSON writing.
+- Added unique sequential note ID generation.
+- Added temporary-file replacement for safer fixture updates.
+- Added valid and invalid `add_note` schema checks.
+- Added safe write-path validation.
+- Completed the real implementations of both P1 tools.
 
 ## Planned Features
 
@@ -235,7 +237,7 @@ The script checks:
 A successful run should end with:
 
 ```text
-All P0 input and file schema checks passed.
+All tool input, fixture, and safe path checks passed.
 ```
 
 ## Local Fixture Data
@@ -405,5 +407,6 @@ The project does not require paid APIs, API keys, cloud storage, hosted AI model
 - [x] Missing-note error handling implemented
 - [x] Short user-facing error handling implemented
 - [x] Real `list_notes` handler implemented
-- [ ] Real `add_note` handler implemented
-- [ ] Real local-data handlers tested in MCP Inspector
+- [x] Real `add_note` handler implemented
+- [x] Safe local note writing implemented
+- [x] Real local-data handlers tested in MCP Inspector
