@@ -7,6 +7,7 @@ import {
 } from "../src/schemas/note-data.js";
 import { searchFaqsInputSchema } from "../src/schemas/search-faqs.js";
 import { searchNotesInputSchema } from "../src/schemas/search-notes.js";
+import { listNotesInputSchema } from "../src/schemas/list-notes.js";
 
 const validSearchNotes = searchNotesInputSchema.parse({
   query: "MCP tools",
@@ -22,6 +23,11 @@ const validGetNote = getNoteInputSchema.parse({
   note_id: "note-001",
 });
 
+const validListNotes = listNotesInputSchema.parse({
+  tag: "mcp",
+  limit: 5,
+});
+
 const emptyNoteId = getNoteInputSchema.safeParse({
   note_id: "",
 });
@@ -32,6 +38,16 @@ const emptySearchQuery = searchNotesInputSchema.safeParse({
 
 const invalidFaqLimit = searchFaqsInputSchema.safeParse({
   query: "MCP",
+  limit: 21,
+});
+
+const emptyListTag = listNotesInputSchema.safeParse({
+  tag: "",
+  limit: 5,
+});
+
+const invalidListLimit = listNotesInputSchema.safeParse({
+  tag: "mcp",
   limit: 21,
 });
 
@@ -50,6 +66,18 @@ if (emptySearchQuery.success) {
 if (invalidFaqLimit.success) {
   throw new Error(
     "The search_faqs schema accepted a limit greater than 20.",
+  );
+}
+
+if (emptyListTag.success) {
+  throw new Error(
+    "The list_notes schema accepted an empty tag.",
+  );
+}
+
+if (invalidListLimit.success) {
+  throw new Error(
+    "The list_notes schema accepted a limit greater than 20.",
   );
 }
 
@@ -147,5 +175,8 @@ console.log("search_faqs valid:", validSearchFaqs);
 console.log("get_note valid:", validGetNote);
 console.log("notes data valid:", validNotesData.length);
 console.log("FAQ data valid:", validFaqsData.length);
+console.log("list_notes valid:", validListNotes);
 console.log("Unsafe data path rejected.");
-console.log("All P0 input and file schema checks passed.");
+console.log(
+  "All P0 and list_notes input and file schema checks passed.",
+);
