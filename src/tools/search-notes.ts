@@ -1,5 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
+import {
+  loadNotes,
+  searchNotes,
+} from "../lib/notes.js";
 import { searchNotesInputSchema } from "../schemas/search-notes.js";
 
 export function registerSearchNotesTool(server: McpServer): void {
@@ -11,26 +15,65 @@ export function registerSearchNotesTool(server: McpServer): void {
       inputSchema: searchNotesInputSchema,
     },
     async (input) => {
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                ok: true,
-                stub: true,
-                tool: "search_notes",
-                input,
-                results: [],
-                message:
-                  "Placeholder response. Local note search will be implemented in Week 3.",
-              },
-              null,
-              2,
-            ),
-          },
-        ],
-      };
+      try {
+        const notes = await loadNotes();
+        const results = searchNotes(
+          notes,
+          input.query,
+          input.limit ?? 5,
+        );
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  ok: true,
+                  tool: "search_notes",
+                  query: input.query,
+                  count: results.length,
+                  results,
+                  message:
+                    results.length === 0
+                      ? "No matching notes were found."
+                      : `Found ${results.length} matching note${
+                          results.length === 1 ? "" : "s"
+                        }.`,
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (error) {
+        const reason =
+          error instanceof Error
+            ? error.message
+            : "Unknown error";
+
+        console.error(`[search_notes] ${reason}`);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  ok: false,
+                  tool: "search_notes",
+                  results: [],
+                  error:
+                    "Unable to search the local notes data.",
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
     },
   );
 }

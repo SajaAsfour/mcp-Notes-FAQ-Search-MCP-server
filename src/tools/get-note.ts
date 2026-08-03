@@ -1,5 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
+import {
+  getNoteById,
+  loadNotes,
+} from "../lib/notes.js";
 import { getNoteInputSchema } from "../schemas/get-note.js";
 
 export function registerGetNoteTool(server: McpServer): void {
@@ -11,26 +15,77 @@ export function registerGetNoteTool(server: McpServer): void {
       inputSchema: getNoteInputSchema,
     },
     async (input) => {
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
+      try {
+        const notes = await loadNotes();
+        const note = getNoteById(notes, input.note_id);
+
+        if (!note) {
+          console.error(
+            `[get_note] Note not found: ${input.note_id}`,
+          );
+
+          return {
+            content: [
               {
-                ok: true,
-                stub: true,
-                tool: "get_note",
-                input,
-                note: null,
-                message:
-                  "Placeholder response. Local note retrieval will be implemented in Week 3.",
+                type: "text",
+                text: JSON.stringify(
+                  {
+                    ok: false,
+                    tool: "get_note",
+                    note: null,
+                    error: `No note was found for ID "${input.note_id}".`,
+                  },
+                  null,
+                  2,
+                ),
               },
-              null,
-              2,
-            ),
-          },
-        ],
-      };
+            ],
+          };
+        }
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  ok: true,
+                  tool: "get_note",
+                  note,
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (error) {
+        const reason =
+          error instanceof Error
+            ? error.message
+            : "Unknown error";
+
+        console.error(`[get_note] ${reason}`);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  ok: false,
+                  tool: "get_note",
+                  note: null,
+                  error:
+                    "Unable to read the local notes data.",
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      }
     },
   );
 }
