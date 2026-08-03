@@ -83,5 +83,10 @@ The server exposes read-only MCP resources in addition to its tools.
 | resource_name | URI | source | content |
 |---|---|---|---|
 | `notes_index` | `notes://index` | `data/notes.json` | Basic note metadata including ID, title, tags, and creation date. Note content is not included. |
+| `faq` | `notes://faq` | `data/faqs.json` | The locally stored FAQ questions and answers. |
 
-The notes index resource is read-only. It allows an MCP client to inspect the available note collection without calling a tool or receiving complete note content.
+Both resources are read-only.
+
+The notes index allows an MCP client to inspect the available note collection without receiving complete note content. Full note content remains available through the `get_note` tool.
+
+The FAQ resource allows the client to read the small local FAQ collection directly as context. The `search_faqs` tool remains available for focused query-based retrieval.
