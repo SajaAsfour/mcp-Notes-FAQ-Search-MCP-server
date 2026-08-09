@@ -1,10 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
 import {
-  createNote,
-  loadNotes,
-  saveNotes,
+  addNoteSafely,
 } from "../lib/notes.js";
+
 import { addNoteInputSchema } from "../schemas/add-note.js";
 
 export function registerAddNoteTool(server: McpServer): void {
@@ -17,13 +16,9 @@ export function registerAddNoteTool(server: McpServer): void {
     },
     async (input) => {
       try {
-        const notes = await loadNotes();
-        const note = createNote(notes, input);
-
-        await saveNotes([
-          ...notes,
-          note,
-        ]);
+        const note = await addNoteSafely(
+          input,
+    );
 
         return {
           content: [

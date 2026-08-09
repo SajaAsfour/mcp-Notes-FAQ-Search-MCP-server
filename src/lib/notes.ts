@@ -32,6 +32,9 @@ export type NewNoteInput = {
   tags?: string[];
 };
 
+let noteWriteQueue: Promise<void> =
+  Promise.resolve();
+
 export async function loadNotes(): Promise<NoteData[]> {
   return readDataFile("notes.json", notesDataSchema);
 }
@@ -159,4 +162,41 @@ export function createNote(
     ),
     created_at: createdAt,
   });
+}
+
+export async function addNoteSafely(
+  input: NewNoteInput,
+): Promise<NoteData> {
+  let createdNote: NoteData | undefined;
+
+  const operation = noteWriteQueue.then(
+    async () => {
+      const notes = await loadNotes();
+      const note = createNote(
+        notes,
+        input,
+      );
+
+      await saveNotes([
+        ...notes,
+        note,
+      ]);
+
+      createdNote = note;
+    },
+  );
+
+  noteWriteQueue = operation.catch(
+    () => undefined,
+  );
+
+  await operation;
+
+  if (!createdNote) {
+    throw new Error(
+      "Unable to create note.",
+    );
+  }
+
+  return createdNote;
 }

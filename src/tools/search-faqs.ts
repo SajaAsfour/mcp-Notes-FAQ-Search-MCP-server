@@ -1,77 +1,112 @@
-import type { McpServer } from "@modelcontextprotocol/server";
+import { z } from "zod/v4";
 
 import {
   loadFaqs,
   searchFaqs,
 } from "../lib/faqs.js";
-import { searchFaqsInputSchema } from "../schemas/search-faqs.js";
 
-export function registerSearchFaqsTool(server: McpServer): void {
-  server.registerTool(
+import {
+  MAX_FAQ_RESPONSE_ANSWER_CHARS,
+  truncateText,
+} from "../lib/output.js";
+
+const searchFaqsInputSchema = z
+  .object({
+    query: z
+      .string()
+      .trim()
+      .min(1, "Search query is required")
+      .max(
+        200,
+        "Search query must not exceed 200 characters",
+      )
+      .describe(
+        "Text to search for in the local FAQ collection",
+      ),
+
+    limit: z
+      .number()
+      .int()
+      .positive()
+      .max(
+        20,
+        "Limit must not exceed 20 results",
+      )
+      .optional()
+      .default(10)
+      .describe(
+        "Maximum number of FAQ results to return",
+      ),
+  })
+  .strict();
+
+export function registerSearchFaqsTool(
+  server: any,
+): void {
+  server.tool(
     "search_faqs",
-    {
-      description:
-        "Searches locally stored FAQ questions and answers using the user's query",
-      inputSchema: searchFaqsInputSchema,
-    },
-    async (input) => {
+    "Search the local FAQ collection",
+    searchFaqsInputSchema.shape,
+    async (input: {
+      query: string;
+      limit?: number;
+    }) => {
       try {
         const faqs = await loadFaqs();
+
         const results = searchFaqs(
           faqs,
           input.query,
-          input.limit ?? 5,
+          input.limit ?? 10,
+        );
+
+        const safeResults = results.map(
+          (result) => {
+            const safeAnswer = truncateText(
+              result.answer,
+              MAX_FAQ_RESPONSE_ANSWER_CHARS,
+            );
+
+            return {
+              ...result,
+              answer: safeAnswer.text,
+              answer_truncated:
+                safeAnswer.truncated,
+              answer_original_characters:
+                safeAnswer.originalCharacters,
+            };
+          },
         );
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(
-                {
-                  ok: true,
-                  tool: "search_faqs",
-                  query: input.query,
-                  count: results.length,
-                  results,
-                  message:
-                    results.length === 0
-                      ? "No matching FAQs were found."
-                      : `Found ${results.length} matching FAQ entr${
-                          results.length === 1 ? "y" : "ies"
-                        }.`,
-                },
-                null,
-                2,
-              ),
+              text: `Found ${safeResults.length} FAQ result(s) for "${input.query}".`,
             },
           ],
+          structuredContent: {
+            query: input.query,
+            count: safeResults.length,
+            results: safeResults,
+          },
         };
       } catch (error) {
-        const reason =
+        console.error(
+          "[tool:search_faqs] Failed to search FAQs:",
           error instanceof Error
             ? error.message
-            : "Unknown error";
-
-        console.error(`[search_faqs] ${reason}`);
+            : "Unknown error",
+        );
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(
-                {
-                  ok: false,
-                  tool: "search_faqs",
-                  results: [],
-                  error:
-                    "Unable to search the local FAQ data.",
-                },
-                null,
-                2,
-              ),
+              text: "Unable to search the FAQ collection.",
             },
           ],
+          isError: true,
         };
       }
     },
