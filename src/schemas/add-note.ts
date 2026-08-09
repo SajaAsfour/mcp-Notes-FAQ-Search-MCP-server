@@ -27,6 +27,6 @@ export const addNoteInputSchema = z.object({
     .max(20, "A note must not contain more than 20 tags")
     .optional()
     .describe("Optional tags used to organize the note"),
-});
+}).strict();
 
 export type AddNoteInput = z.infer<typeof addNoteInputSchema>;

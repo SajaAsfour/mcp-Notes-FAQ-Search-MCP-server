@@ -17,6 +17,90 @@ import {
   truncateText,
 } from "../src/lib/output.js";
 
+import {
+  validateFetchUrl,
+} from "../src/lib/http.js";
+
+const tooLongFaqQuery =
+  searchFaqsInputSchema.safeParse({
+    query: "x".repeat(201),
+  });
+
+if (tooLongFaqQuery.success) {
+  throw new Error(
+    "The search_faqs schema accepted a query longer than 200 characters.",
+  );
+}
+
+const unexpectedFaqField =
+  searchFaqsInputSchema.safeParse({
+    query: "MCP",
+    url: "https://evil.example",
+  });
+
+if (unexpectedFaqField.success) {
+  throw new Error(
+    "The search_faqs schema accepted an unexpected URL field.",
+  );
+}
+
+const tooLongAddNoteContent =
+  addNoteInputSchema.safeParse({
+    title: "Security test",
+    content: "x".repeat(10001),
+  });
+
+if (tooLongAddNoteContent.success) {
+  throw new Error(
+    "The add_note schema accepted content longer than 10000 characters.",
+  );
+}
+
+const oversizedFaqData =
+  faqDataSchema.safeParse({
+    id: "faq-999",
+    question: "Security test?",
+    answer: "x".repeat(10001),
+  });
+
+if (oversizedFaqData.success) {
+  throw new Error(
+    "The FAQ data schema accepted an oversized answer.",
+  );
+}
+
+let evilHostRejected = false;
+
+try {
+  validateFetchUrl(
+    "https://evil.example",
+  );
+} catch {
+  evilHostRejected = true;
+}
+
+if (!evilHostRejected) {
+  throw new Error(
+    "The HTTP helper accepted a non-allowlisted host.",
+  );
+}
+
+let localhostRejected = false;
+
+try {
+  validateFetchUrl(
+    "http://localhost",
+  );
+} catch {
+  localhostRejected = true;
+}
+
+if (!localhostRejected) {
+  throw new Error(
+    "The HTTP helper accepted localhost.",
+  );
+}
+
 const validSearchNotes = searchNotesInputSchema.parse({
   query: "MCP tools",
   limit: 5,
@@ -353,3 +437,4 @@ console.log("Unsafe data write path rejected.");
 console.log(
   "All tool input, fixture, and safe path checks passed.",
 );
+
