@@ -1,6 +1,10 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
 import { loadNotes } from "../lib/notes.js";
+import {
+  capItems,
+  MAX_RESOURCE_ITEMS,
+} from "../lib/output.js";
 
 export function registerNotesIndexResource(server: McpServer): void {
   server.registerResource(
@@ -16,7 +20,12 @@ export function registerNotesIndexResource(server: McpServer): void {
       try {
         const notes = await loadNotes();
 
-        const noteIndex = notes.map((note) => ({
+        const cappedNotes = capItems(
+          notes,
+          MAX_RESOURCE_ITEMS,
+        );
+
+        const noteIndex = cappedNotes.items.map((note) => ({
           id: note.id,
           title: note.title,
           tags: note.tags,
@@ -31,6 +40,10 @@ export function registerNotesIndexResource(server: McpServer): void {
               text: JSON.stringify(
                 {
                   notes: noteIndex,
+                  total_count: cappedNotes.total,
+                  returned_count: noteIndex.length,
+                  truncated: cappedNotes.truncated,
+                  max_items: MAX_RESOURCE_ITEMS,
                 },
                 null,
                 2,
@@ -39,8 +52,18 @@ export function registerNotesIndexResource(server: McpServer): void {
           ],
         };
       } catch (error) {
-        console.error("Failed to read notes index resource:", error);
-        throw new Error("Unable to read the notes index resource.");
+        const reason =
+          error instanceof Error
+            ? error.message
+            : "Unknown error";
+
+        console.error(
+          `[resource:notes_index] ${reason}`,
+        );
+
+        throw new Error(
+          "Unable to read the notes index resource.",
+        );
       }
     },
   );

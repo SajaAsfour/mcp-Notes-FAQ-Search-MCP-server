@@ -16,6 +16,6 @@ export const searchNotesInputSchema = z.object({
     .max(20)
     .optional()
     .describe("Maximum number of matching notes to return; defaults to 5"),
-});
+}).strict();
 
 export type SearchNotesInput = z.infer<typeof searchNotesInputSchema>;

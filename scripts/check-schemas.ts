@@ -10,6 +10,12 @@ import { searchNotesInputSchema } from "../src/schemas/search-notes.js";
 import { listNotesInputSchema } from "../src/schemas/list-notes.js";
 import { writeDataFile } from "../src/lib/write-data-file.js";
 import { addNoteInputSchema } from "../src/schemas/add-note.js";
+import {
+  capItems,
+  MAX_NOTE_RESPONSE_CONTENT_CHARS,
+  MAX_RESOURCE_ITEMS,
+  truncateText,
+} from "../src/lib/output.js";
 
 const validSearchNotes = searchNotesInputSchema.parse({
   query: "MCP tools",
@@ -231,6 +237,107 @@ try {
 if (!unsafeWritePathWasRejected) {
   throw new Error(
     "The data file writer accepted a path outside the data directory.",
+  );
+}
+
+const tooLongSearchNotes =
+  searchNotesInputSchema.safeParse({
+    query: "x".repeat(201),
+  });
+
+if (tooLongSearchNotes.success) {
+  throw new Error(
+    "The search_notes schema accepted a query longer than 200 characters.",
+  );
+}
+
+const pathLikeNoteId =
+  getNoteInputSchema.safeParse({
+    note_id: "../etc/passwd",
+  });
+
+if (pathLikeNoteId.success) {
+  throw new Error(
+    "The get_note schema accepted a traversal-style note ID.",
+  );
+}
+
+const unexpectedSearchNotesField =
+  searchNotesInputSchema.safeParse({
+    query: "MCP",
+    url: "https://evil.example",
+  });
+
+if (unexpectedSearchNotesField.success) {
+  throw new Error(
+    "The search_notes schema accepted an unexpected field.",
+  );
+}
+
+const oversizedStoredNote =
+  noteDataSchema.safeParse({
+    id: "note-999",
+    title: "Oversized note",
+    content: "x".repeat(10001),
+    tags: ["security"],
+    created_at: "2026-08-09T08:00:00.000Z",
+  });
+
+if (oversizedStoredNote.success) {
+  throw new Error(
+    "The note data schema accepted oversized note content.",
+  );
+}
+
+let traversalPathRejected = false;
+
+try {
+  await readDataFile(
+    "../etc/passwd",
+    notesDataSchema,
+  );
+} catch {
+  traversalPathRejected = true;
+}
+
+if (!traversalPathRejected) {
+  throw new Error(
+    "The data reader accepted ../etc/passwd.",
+  );
+}
+
+const truncatedOutput = truncateText(
+  "x".repeat(
+    MAX_NOTE_RESPONSE_CONTENT_CHARS + 1,
+  ),
+  MAX_NOTE_RESPONSE_CONTENT_CHARS,
+);
+
+if (
+  !truncatedOutput.truncated ||
+  truncatedOutput.text.length >
+    MAX_NOTE_RESPONSE_CONTENT_CHARS
+) {
+  throw new Error(
+    "The note response output cap was not enforced.",
+  );
+}
+
+const cappedResourceItems = capItems(
+  Array.from(
+    { length: MAX_RESOURCE_ITEMS + 1 },
+    (_, index) => index,
+  ),
+  MAX_RESOURCE_ITEMS,
+);
+
+if (
+  !cappedResourceItems.truncated ||
+  cappedResourceItems.items.length !==
+    MAX_RESOURCE_ITEMS
+) {
+  throw new Error(
+    "The resource item cap was not enforced.",
   );
 }
 
