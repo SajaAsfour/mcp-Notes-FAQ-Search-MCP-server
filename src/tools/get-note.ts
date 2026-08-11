@@ -25,9 +25,7 @@ export function registerGetNoteTool(server: McpServer): void {
         const note = getNoteById(notes, input.note_id);
 
         if (!note) {
-          console.error(
-            `[get_note] Note not found: ${input.note_id}`,
-          );
+          console.error("[get_note] Note was not found.");
 
           return {
             content: [
@@ -38,13 +36,15 @@ export function registerGetNoteTool(server: McpServer): void {
                     ok: false,
                     tool: "get_note",
                     note: null,
-                    error: `No note was found for ID "${input.note_id}".`,
+                    error:
+                      "No note found for that ID. Use list_notes to choose a valid note ID.",
                   },
                   null,
                   2,
                 ),
               },
             ],
+            isError: true,
           };
         }
 
@@ -79,13 +79,10 @@ export function registerGetNoteTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error
-            ? error.message
-            : "Unknown error";
-
-        console.error(`[get_note] ${reason}`);
+      } catch {
+        console.error(
+          "[get_note] Failed to read local notes data.",
+        );
 
         return {
           content: [
@@ -97,13 +94,14 @@ export function registerGetNoteTool(server: McpServer): void {
                   tool: "get_note",
                   note: null,
                   error:
-                    "Unable to read the local notes data.",
+                    "Unable to read notes. Check the local notes data and try again.",
                 },
                 null,
                 2,
               ),
             },
           ],
+          isError: true,
         };
       }
     },
