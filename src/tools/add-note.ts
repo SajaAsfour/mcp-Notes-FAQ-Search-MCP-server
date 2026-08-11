@@ -18,7 +18,7 @@ export function registerAddNoteTool(server: McpServer): void {
       try {
         const note = await addNoteSafely(
           input,
-    );
+        );
 
         return {
           content: [
@@ -42,13 +42,10 @@ export function registerAddNoteTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error
-            ? error.message
-            : "Unknown error";
-
-        console.error(`[add_note] ${reason}`);
+      } catch {
+        console.error(
+          "[add_note] Failed to save the note.",
+        );
 
         return {
           content: [
@@ -61,13 +58,14 @@ export function registerAddNoteTool(server: McpServer): void {
                   success: false,
                   note: null,
                   error:
-                    "Unable to add the note to the local collection.",
+                    "Unable to save the note. Check the local notes data and try again.",
                 },
                 null,
                 2,
               ),
             },
           ],
+          isError: true,
         };
       }
     },
