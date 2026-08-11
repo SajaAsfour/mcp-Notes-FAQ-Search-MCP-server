@@ -49,13 +49,10 @@ export function registerListNotesTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error
-            ? error.message
-            : "Unknown error";
-
-        console.error(`[list_notes] ${reason}`);
+      } catch {
+        console.error(
+          "[list_notes] Failed to list local notes data.",
+        );
 
         return {
           content: [
@@ -67,13 +64,14 @@ export function registerListNotesTool(server: McpServer): void {
                   tool: "list_notes",
                   notes: [],
                   error:
-                    "Unable to list the local notes data.",
+                    "Unable to list notes. Check the local notes data and try again.",
                 },
                 null,
                 2,
               ),
             },
           ],
+          isError: true,
         };
       }
     },
