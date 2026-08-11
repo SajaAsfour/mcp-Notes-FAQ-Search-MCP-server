@@ -35,7 +35,8 @@ export function registerSearchFaqsTool(server: McpServer): void {
             ...result,
             answer: safeAnswer.text,
             answer_truncated: safeAnswer.truncated,
-            answer_original_characters: safeAnswer.originalCharacters,
+            answer_original_characters:
+              safeAnswer.originalCharacters,
           };
         });
 
@@ -63,11 +64,10 @@ export function registerSearchFaqsTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error ? error.message : "Unknown error";
-
-        console.error(`[search_faqs] ${reason}`);
+      } catch {
+        console.error(
+          "[search_faqs] Failed to search local FAQ data.",
+        );
 
         return {
           content: [
@@ -78,7 +78,8 @@ export function registerSearchFaqsTool(server: McpServer): void {
                   ok: false,
                   tool: "search_faqs",
                   results: [],
-                  error: "Unable to search the local FAQ data.",
+                  error:
+                    "Unable to search FAQs. Check the local FAQ data and try again.",
                 },
                 null,
                 2,
