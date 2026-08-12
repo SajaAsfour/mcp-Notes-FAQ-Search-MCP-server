@@ -13,7 +13,7 @@ export function registerSearchFaqsTool(server: McpServer): void {
     {
       description:
         "Searches locally stored FAQ questions and answers using the user's query",
-      inputSchema: searchFaqsInputSchema.shape,
+      inputSchema: searchFaqsInputSchema,
     },
     async (input) => {
       try {
