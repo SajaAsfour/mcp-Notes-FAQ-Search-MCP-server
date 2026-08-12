@@ -46,7 +46,7 @@ The P1 tools now use real local data:
 The server also exposes two read-only MCP resources:
 
 - `notes://index` — returns basic metadata for the locally stored notes without returning complete note content.
-- `notes://faq` — returns the locally stored FAQ questions and answers.
+- `faq://index` — returns the locally stored FAQ questions and answers.
 
 Resources can be listed and read by an MCP client without calling a tool. They reuse the same safe local JSON loading and validation used by the real tool handlers.
 
