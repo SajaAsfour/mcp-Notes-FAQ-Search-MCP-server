@@ -23,7 +23,7 @@ Action taken:
 
 Owner: Yara Khattab  
 Due: End of Week 4  
-Status: Fix implemented; peer confirmation pending.
+Fix implemented; peer confirmation pending.
 
 ### Error Handling
 
@@ -67,7 +67,7 @@ The README was updated so the documented FAQ resource URI matches the implementa
 
 Owner: Saja Asfour  
 Due: End of Week 4  
-Status: Fix implemented; peer confirmation pending.
+Fix implemented; peer confirmation pending.
 
 ### Demo Path
 
