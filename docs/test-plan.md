@@ -19,7 +19,7 @@ All tests are executed against the Week 5 branch without adding new product feat
 | ID | Tool | Setup | Input | Expected | Result | Evidence |
 |---|---|---|---|---|---|---|
 | W5-01 | `search_notes` | Server running with the committed `data/notes.json` fixture | `{"query":"MCP","limit":5}` | Request succeeds and returns matching MCP-related notes from the local fixture. | PASS | `docs/evidence/w5-01-search-notes-happy.png` |
-| W5-02 | `search_notes` | Server running with the committed `data/notes.json` fixture | `{"query":"pineapple orbit xyz","limit":5}` | Request succeeds with an empty `results` array and a no-matches message. | PASS |
+| W5-02 | `search_notes` | Server running with the committed `data/notes.json` fixture | `{"query":"pineapple orbit xyz","limit":5}` | Request succeeds with an empty `results` array and a no-matches message. | PASS | `docs/evidence/w5-02-search-notes-empty.png` |
 | W5-03 | `get_note` | Server running with the committed `data/notes.json` fixture | `{"note_id":"note-001"}` | Request succeeds and returns note `note-001`, titled `MCP Tools and Resources`. | PASS |
 | W5-04 | `get_note` | Server running normally | `{"note_id":"../etc/passwd"}` | MCP input validation rejects the request because the note ID does not match the allowed `note-###` format. No filesystem data is exposed. | PASS | `docs/evidence/w5-04-get-note-invalid-id.png` |
 | W5-05 | `search_faqs` | Server running with the committed `data/faqs.json` fixture | `{"query":"Inspector","limit":5}` | Request succeeds and returns the FAQ describing MCP Inspector. | PASS |
