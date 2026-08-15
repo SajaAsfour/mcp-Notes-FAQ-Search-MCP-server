@@ -1,10 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
 import {
-  createNote,
-  loadNotes,
-  saveNotes,
+  addNoteSafely,
 } from "../lib/notes.js";
+
 import { addNoteInputSchema } from "../schemas/add-note.js";
 
 export function registerAddNoteTool(server: McpServer): void {
@@ -17,13 +16,9 @@ export function registerAddNoteTool(server: McpServer): void {
     },
     async (input) => {
       try {
-        const notes = await loadNotes();
-        const note = createNote(notes, input);
-
-        await saveNotes([
-          ...notes,
-          note,
-        ]);
+        const note = await addNoteSafely(
+          input,
+        );
 
         return {
           content: [
@@ -47,13 +42,10 @@ export function registerAddNoteTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error
-            ? error.message
-            : "Unknown error";
-
-        console.error(`[add_note] ${reason}`);
+      } catch {
+        console.error(
+          "[add_note] Failed to save the note.",
+        );
 
         return {
           content: [
@@ -66,13 +58,14 @@ export function registerAddNoteTool(server: McpServer): void {
                   success: false,
                   note: null,
                   error:
-                    "Unable to add the note to the local collection.",
+                    "Unable to save the note. Check the local notes data and try again.",
                 },
                 null,
                 2,
               ),
             },
           ],
+          isError: true,
         };
       }
     },

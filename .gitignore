@@ -11,8 +11,17 @@ out/
 
 # Environment variables
 .env
+.env.local
 .env.*
 !.env.example
+
+# Private keys and credential files
+*.pem
+*.key
+id_rsa
+id_ed25519
+credentials.json
+service-account*.json
 
 # Logs
 logs/

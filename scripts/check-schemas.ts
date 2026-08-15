@@ -10,6 +10,96 @@ import { searchNotesInputSchema } from "../src/schemas/search-notes.js";
 import { listNotesInputSchema } from "../src/schemas/list-notes.js";
 import { writeDataFile } from "../src/lib/write-data-file.js";
 import { addNoteInputSchema } from "../src/schemas/add-note.js";
+import {
+  capItems,
+  MAX_NOTE_RESPONSE_CONTENT_CHARS,
+  MAX_RESOURCE_ITEMS,
+  truncateText,
+} from "../src/lib/output.js";
+
+import {
+  validateFetchUrl,
+} from "../src/lib/http.js";
+
+const tooLongFaqQuery =
+  searchFaqsInputSchema.safeParse({
+    query: "x".repeat(201),
+  });
+
+if (tooLongFaqQuery.success) {
+  throw new Error(
+    "The search_faqs schema accepted a query longer than 200 characters.",
+  );
+}
+
+const unexpectedFaqField =
+  searchFaqsInputSchema.safeParse({
+    query: "MCP",
+    url: "https://evil.example",
+  });
+
+if (unexpectedFaqField.success) {
+  throw new Error(
+    "The search_faqs schema accepted an unexpected URL field.",
+  );
+}
+
+const tooLongAddNoteContent =
+  addNoteInputSchema.safeParse({
+    title: "Security test",
+    content: "x".repeat(10001),
+  });
+
+if (tooLongAddNoteContent.success) {
+  throw new Error(
+    "The add_note schema accepted content longer than 10000 characters.",
+  );
+}
+
+const oversizedFaqData =
+  faqDataSchema.safeParse({
+    id: "faq-999",
+    question: "Security test?",
+    answer: "x".repeat(10001),
+  });
+
+if (oversizedFaqData.success) {
+  throw new Error(
+    "The FAQ data schema accepted an oversized answer.",
+  );
+}
+
+let evilHostRejected = false;
+
+try {
+  validateFetchUrl(
+    "https://evil.example",
+  );
+} catch {
+  evilHostRejected = true;
+}
+
+if (!evilHostRejected) {
+  throw new Error(
+    "The HTTP helper accepted a non-allowlisted host.",
+  );
+}
+
+let localhostRejected = false;
+
+try {
+  validateFetchUrl(
+    "http://localhost",
+  );
+} catch {
+  localhostRejected = true;
+}
+
+if (!localhostRejected) {
+  throw new Error(
+    "The HTTP helper accepted localhost.",
+  );
+}
 
 const validSearchNotes = searchNotesInputSchema.parse({
   query: "MCP tools",
@@ -234,6 +324,107 @@ if (!unsafeWritePathWasRejected) {
   );
 }
 
+const tooLongSearchNotes =
+  searchNotesInputSchema.safeParse({
+    query: "x".repeat(201),
+  });
+
+if (tooLongSearchNotes.success) {
+  throw new Error(
+    "The search_notes schema accepted a query longer than 200 characters.",
+  );
+}
+
+const pathLikeNoteId =
+  getNoteInputSchema.safeParse({
+    note_id: "../etc/passwd",
+  });
+
+if (pathLikeNoteId.success) {
+  throw new Error(
+    "The get_note schema accepted a traversal-style note ID.",
+  );
+}
+
+const unexpectedSearchNotesField =
+  searchNotesInputSchema.safeParse({
+    query: "MCP",
+    url: "https://evil.example",
+  });
+
+if (unexpectedSearchNotesField.success) {
+  throw new Error(
+    "The search_notes schema accepted an unexpected field.",
+  );
+}
+
+const oversizedStoredNote =
+  noteDataSchema.safeParse({
+    id: "note-999",
+    title: "Oversized note",
+    content: "x".repeat(10001),
+    tags: ["security"],
+    created_at: "2026-08-09T08:00:00.000Z",
+  });
+
+if (oversizedStoredNote.success) {
+  throw new Error(
+    "The note data schema accepted oversized note content.",
+  );
+}
+
+let traversalPathRejected = false;
+
+try {
+  await readDataFile(
+    "../etc/passwd",
+    notesDataSchema,
+  );
+} catch {
+  traversalPathRejected = true;
+}
+
+if (!traversalPathRejected) {
+  throw new Error(
+    "The data reader accepted ../etc/passwd.",
+  );
+}
+
+const truncatedOutput = truncateText(
+  "x".repeat(
+    MAX_NOTE_RESPONSE_CONTENT_CHARS + 1,
+  ),
+  MAX_NOTE_RESPONSE_CONTENT_CHARS,
+);
+
+if (
+  !truncatedOutput.truncated ||
+  truncatedOutput.text.length >
+    MAX_NOTE_RESPONSE_CONTENT_CHARS
+) {
+  throw new Error(
+    "The note response output cap was not enforced.",
+  );
+}
+
+const cappedResourceItems = capItems(
+  Array.from(
+    { length: MAX_RESOURCE_ITEMS + 1 },
+    (_, index) => index,
+  ),
+  MAX_RESOURCE_ITEMS,
+);
+
+if (
+  !cappedResourceItems.truncated ||
+  cappedResourceItems.items.length !==
+    MAX_RESOURCE_ITEMS
+) {
+  throw new Error(
+    "The resource item cap was not enforced.",
+  );
+}
+
 console.log("search_notes valid:", validSearchNotes);
 console.log("search_faqs valid:", validSearchFaqs);
 console.log("get_note valid:", validGetNote);
@@ -246,3 +437,4 @@ console.log("Unsafe data write path rejected.");
 console.log(
   "All tool input, fixture, and safe path checks passed.",
 );
+

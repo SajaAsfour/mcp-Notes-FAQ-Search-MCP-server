@@ -16,6 +16,6 @@ export const searchFaqsInputSchema = z.object({
     .max(20)
     .optional()
     .describe("Maximum number of matching FAQ entries to return; defaults to 5"),
-});
+}).strict();
 
 export type SearchFaqsInput = z.infer<typeof searchFaqsInputSchema>;

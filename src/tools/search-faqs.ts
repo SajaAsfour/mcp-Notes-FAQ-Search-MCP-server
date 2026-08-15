@@ -1,9 +1,10 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 
+import { loadFaqs, searchFaqs } from "../lib/faqs.js";
 import {
-  loadFaqs,
-  searchFaqs,
-} from "../lib/faqs.js";
+  MAX_FAQ_RESPONSE_ANSWER_CHARS,
+  truncateText,
+} from "../lib/output.js";
 import { searchFaqsInputSchema } from "../schemas/search-faqs.js";
 
 export function registerSearchFaqsTool(server: McpServer): void {
@@ -17,11 +18,27 @@ export function registerSearchFaqsTool(server: McpServer): void {
     async (input) => {
       try {
         const faqs = await loadFaqs();
+
         const results = searchFaqs(
           faqs,
           input.query,
           input.limit ?? 5,
         );
+
+        const safeResults = results.map((result) => {
+          const safeAnswer = truncateText(
+            result.answer,
+            MAX_FAQ_RESPONSE_ANSWER_CHARS,
+          );
+
+          return {
+            ...result,
+            answer: safeAnswer.text,
+            answer_truncated: safeAnswer.truncated,
+            answer_original_characters:
+              safeAnswer.originalCharacters,
+          };
+        });
 
         return {
           content: [
@@ -32,13 +49,13 @@ export function registerSearchFaqsTool(server: McpServer): void {
                   ok: true,
                   tool: "search_faqs",
                   query: input.query,
-                  count: results.length,
-                  results,
+                  count: safeResults.length,
+                  results: safeResults,
                   message:
-                    results.length === 0
+                    safeResults.length === 0
                       ? "No matching FAQs were found."
-                      : `Found ${results.length} matching FAQ entr${
-                          results.length === 1 ? "y" : "ies"
+                      : `Found ${safeResults.length} matching FAQ entr${
+                          safeResults.length === 1 ? "y" : "ies"
                         }.`,
                 },
                 null,
@@ -47,13 +64,10 @@ export function registerSearchFaqsTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error
-            ? error.message
-            : "Unknown error";
-
-        console.error(`[search_faqs] ${reason}`);
+      } catch {
+        console.error(
+          "[search_faqs] Failed to search local FAQ data.",
+        );
 
         return {
           content: [
@@ -65,13 +79,14 @@ export function registerSearchFaqsTool(server: McpServer): void {
                   tool: "search_faqs",
                   results: [],
                   error:
-                    "Unable to search the local FAQ data.",
+                    "Unable to search FAQs. Check the local FAQ data and try again.",
                 },
                 null,
                 2,
               ),
             },
           ],
+          isError: true,
         };
       }
     },

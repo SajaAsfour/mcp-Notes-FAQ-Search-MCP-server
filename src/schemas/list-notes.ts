@@ -17,6 +17,6 @@ export const listNotesInputSchema = z.object({
     .max(20)
     .optional()
     .describe("Maximum number of notes to return; defaults to 5"),
-});
+}).strict();
 
 export type ListNotesInput = z.infer<typeof listNotesInputSchema>;

@@ -2,14 +2,31 @@ import { z } from "zod/v4";
 
 export const faqDataSchema = z
   .object({
-    id: z.string().trim().min(1),
-    question: z.string().trim().min(1),
-    answer: z.string().trim().min(1),
+    id: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .regex(/^faq-\d{3,}$/u),
+    question: z
+      .string()
+      .trim()
+      .min(1)
+      .max(500),
+    answer: z
+      .string()
+      .trim()
+      .min(1)
+      .max(10000),
   })
   .strict();
 
 export const faqsDataSchema = z
   .array(faqDataSchema)
+  .max(
+    500,
+    "FAQ collection must not contain more than 500 entries",
+  )
   .superRefine((faqs, context) => {
     const ids = new Set<string>();
 

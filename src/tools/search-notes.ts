@@ -47,13 +47,10 @@ export function registerSearchNotesTool(server: McpServer): void {
             },
           ],
         };
-      } catch (error) {
-        const reason =
-          error instanceof Error
-            ? error.message
-            : "Unknown error";
-
-        console.error(`[search_notes] ${reason}`);
+      } catch {
+        console.error(
+          "[search_notes] Failed to search local notes data.",
+        );
 
         return {
           content: [
@@ -65,13 +62,14 @@ export function registerSearchNotesTool(server: McpServer): void {
                   tool: "search_notes",
                   results: [],
                   error:
-                    "Unable to search the local notes data.",
+                    "Unable to search notes. Check the local notes data and try again.",
                 },
                 null,
                 2,
               ),
             },
           ],
+          isError: true,
         };
       }
     },

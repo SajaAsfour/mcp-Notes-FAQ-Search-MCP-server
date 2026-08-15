@@ -2,16 +2,41 @@ import { z } from "zod/v4";
 
 export const noteDataSchema = z
   .object({
-    id: z.string().trim().min(1),
-    title: z.string().trim().min(1),
-    content: z.string().trim().min(1),
-    tags: z.array(z.string().trim().min(1)),
+    id: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .regex(/^note-\d{3,}$/u),
+    title: z
+      .string()
+      .trim()
+      .min(1)
+      .max(200),
+    content: z
+      .string()
+      .trim()
+      .min(1)
+      .max(10000),
+    tags: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(1)
+          .max(50),
+      )
+      .max(20),
     created_at: z.iso.datetime(),
   })
   .strict();
 
 export const notesDataSchema = z
   .array(noteDataSchema)
+  .max(
+    500,
+    "Notes collection must not contain more than 500 notes",
+  )
   .superRefine((notes, context) => {
     const ids = new Set<string>();
 
