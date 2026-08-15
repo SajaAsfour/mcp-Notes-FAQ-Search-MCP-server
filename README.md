@@ -228,6 +228,18 @@ npm run typecheck
 
 This command validates the TypeScript files without generating build output.
 
+## Week 5 Smoke Tests
+
+Optional Week 5 smoke tests cover two pure helper functions without opening a real MCP stdio connection:
+
+- `getSearchTerms` in `src/lib/search.ts`
+- `truncateText` in `src/lib/output.ts`
+
+Run the smoke tests with:
+
+```bash
+npm test
+
 ## Zod and Fixture Validation
 
 Run the local schema and fixture checks:
