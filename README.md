@@ -4,433 +4,240 @@ Hi, this is my Academy MCP project
 
 https://nextflows.ai/academy
 
-## Project Overview
+# Notes & FAQ Search MCP Server
 
-Notes & FAQ Search is an MCP server that allows users to search their own notes and frequently asked questions fully offline.
+## What It Does
 
-The project provides a simple and private way to find information without requiring paid API keys, cloud storage, or an internet connection while the server is running.
+Notes & FAQ Search is a TypeScript MCP server for searching and managing locally stored notes and frequently asked questions.
 
-## Project Goal
+The server works fully offline at runtime and uses local JSON fixture data instead of a cloud database or external API.
 
-The goal of this project is to help students and other users quickly search their personal notes and FAQ collections through focused MCP tools.
+It exposes five MCP tools:
 
-Week 3 — Real local fixture data is wired into all five project tools.
-
-- `search_notes` searches `data/notes.json`.
-- `search_faqs` searches `data/faqs.json`.
-- `get_note` retrieves a complete note from `data/notes.json`.
-- `list_notes` returns basic note metadata with optional tag filtering.
-- `add_note` validates and safely writes new notes to `data/notes.json`.
-
-## Tool Inventory
-
-### P0 Tools
-
-The following tools are required for the Demo Day workflow:
-
-- `search_notes` — searches locally stored notes using a text query.
-- `search_faqs` — searches locally stored FAQ questions and answers.
-- `get_note` — retrieves one complete note using its unique ID.
-
-The P0 tools use validated local JSON fixture data and return real results.
-
-### P1 Tools
-
-The P1 tools now use real local data:
-
-- `list_notes` — lists validated local notes with optional tag filtering.
-- `add_note` — validates and safely adds a note to the local collection.
-
-## MCP Resources
+* Search notes.
+* Search FAQs.
+* Retrieve a complete note by ID.
+* List notes with optional tag filtering.
+* Add a new note safely to local storage.
 
 The server also exposes two read-only MCP resources:
 
-- `notes://index` — returns basic metadata for the locally stored notes without returning complete note content.
-- `faq://index` — returns the locally stored FAQ questions and answers.
+* `notes://index`
+* `faq://index`
 
-Resources can be listed and read by an MCP client without calling a tool. They reuse the same safe local JSON loading and validation used by the real tool handlers.
+## Requirements
 
-## Completed Work
+Before installing the project, make sure you have:
 
-- Selected Notes & FAQ Search as the project idea.
-- Completed the project design document.
-- Received mentor approval for the project design.
-- Defined three P0 tools and two P1 tools.
-- Added Zod input schemas for all planned tools.
-- Added descriptions and validation rules for tool inputs.
-- Added a local script for testing the P0 schemas.
-- Added one valid example input for every planned tool.
-- Added the MCP server dependency.
-- Added a `createServer()` factory.
-- Added one register function per tool.
-- Registered all five planned tools.
-- Connected the MCP server using `serveStdio`.
-- Added a development command for running the server.
-- Confirmed that TypeScript and schema checks pass.
-- Confirmed that the MCP server starts successfully over stdio.
-- Verified the Week 2 placeholder server using MCP Inspector.
-- Selected local JSON files as the data source for all P0 tools.
-- Added local fixture notes in `data/notes.json`.
-- Added local FAQ entries in `data/faqs.json`.
-- Added the Week 3 data plan in `docs/data-plan.md`.
-- Added a shared HTTP JSON helper with timeout handling for future HTTP sources.
-- Added safe local file path resolution.
-- Restricted file reads to the repository `data` directory.
-- Added Zod schemas for note and FAQ file payloads.
-- Added duplicate note and FAQ ID validation.
-- Implemented the real `search_notes` handler.
-- Implemented the real `search_faqs` handler.
-- Implemented the real `get_note` handler.
-- Added normalized keyword matching and simple relevance scoring.
-- Added empty search result handling.
-- Added missing-note error handling.
-- Added stderr failure logging and short user-facing errors.
-- Added reusable note loading and search functions.
-- Added reusable FAQ loading and search functions.
-- Connected `search_notes` to `data/notes.json`.
-- Connected `search_faqs` to `data/faqs.json`.
-- Connected `get_note` to `data/notes.json`.
-- Added FAQ fixture payload validation.
-- Implemented the real `list_notes` handler.
-- Added reusable note listing and tag filtering logic.
-- Added valid and invalid `list_notes` schema checks.
-- Connected `list_notes` to `data/notes.json`.
-- Implemented the real `add_note` handler.
-- Added safe local JSON writing.
-- Added unique sequential note ID generation.
-- Added temporary-file replacement for safer fixture updates.
-- Added valid and invalid `add_note` schema checks.
-- Added safe write-path validation.
-- Completed the real implementations of both P1 tools.
+* Git
+* Node.js 20 or later
+* npm
 
-## Planned Features
-
-- Test all real P0 handlers using MCP Inspector.
-- Capture final Week 3 submission evidence.
-- Improve search ranking if required.
-- Implement the real `add_note` handler with safe local persistence.
-- Test all five real handlers using MCP Inspector after `add_note` is completed.
-- Add build and production start commands when required.
-
-## Week 3 Data Sources
-
-All three P0 tools use local JSON fixture files:
-
-- `search_notes` reads from `data/notes.json`.
-- `get_note` reads from `data/notes.json`.
-- `search_faqs` reads from `data/faqs.json`.
-
-The project does not use an external API, paid API key, cloud database, or hosted search service.
-
-Because the primary data source is stored inside the repository, the Demo Day workflow can continue working when Wi-Fi is unavailable.
-
-## Safe Fetching and Parsing
-
-Task 3.3 adds shared safety rules for external and file data:
-
-1. Resolve local fixture paths inside the repository `data` directory.
-2. Reject absolute paths and paths containing `..`.
-3. Read the file as text.
-4. Parse the JSON payload as an unknown value.
-5. Validate the parsed payload with Zod.
-6. Use the data only after successful validation.
-7. Return successful empty search results when no matches are found.
-8. Log internal failures to stderr using the tool name and reason.
-9. Return short user-facing errors instead of raw internal details.
-
-The shared HTTP helper uses `AbortSignal.timeout(timeoutMs)` and throws a clear error for non-successful HTTP responses. It is available for future HTTP data sources but is not called by the current offline tools.
-
-## Current Project Structure
-
-```text
-mcp-Notes-FAQ-Search-MCP-server/
-├── data/
-│   ├── faqs.json
-│   └── notes.json
-├── docs/
-│   ├── data-plan.md
-│   ├── design.md
-│   └── project-choice.md
-├── examples/
-│   ├── add_note.json
-│   ├── get_note.json
-│   ├── list_notes.json
-│   ├── search_faqs.json
-│   └── search_notes.json
-├── scripts/
-│   └── check-schemas.ts
-├── src/
-│   ├── lib/
-│   │   ├── faqs.ts
-│   │   ├── http.ts
-│   │   ├── notes.ts
-│   │   ├── read-data-file.ts
-│   │   ├── search.ts
-│   │   └── write-data-file.ts
-│   ├── schemas/
-│   │   ├── add-note.ts
-│   │   ├── faq-data.ts
-│   │   ├── get-note.ts
-│   │   ├── list-notes.ts
-│   │   ├── note-data.ts
-│   │   ├── search-faqs.ts
-│   │   └── search-notes.ts
-│   ├── tools/
-│   │   ├── add-note.ts
-│   │   ├── get-note.ts
-│   │   ├── list-notes.ts
-│   │   ├── search-faqs.ts
-│   │   └── search-notes.ts
-│   └── index.ts
-├── .gitignore
-├── README.md
-├── package.json
-├── package-lock.json
-└── tsconfig.json
-```
-
-## Prerequisites
-
-Before running the project, make sure the following are installed:
-
-- Node.js 20 or later
-- npm
-
-Check the installed versions using:
+Check Node.js and npm with:
 
 ```bash
 node --version
 npm --version
 ```
 
-## Installation
+## Install
 
-Clone the repository and enter the project directory:
+Clone the repository:
 
 ```bash
 git clone https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server.git
+```
+
+Enter the project directory:
+
+```bash
 cd mcp-Notes-FAQ-Search-MCP-server
 ```
 
-Install the project dependencies:
+Install the dependencies:
 
 ```bash
 npm install
 ```
 
-## TypeScript Validation
+## Run
 
-Run the TypeScript checker:
-
-```bash
-npm run typecheck
-```
-
-This command validates the TypeScript files without generating build output.
-
-## Week 5 Smoke Tests
-
-Optional Week 5 smoke tests cover two pure helper functions without opening a real MCP stdio connection:
-
-- `getSearchTerms` in `src/lib/search.ts`
-- `truncateText` in `src/lib/output.ts`
-
-Run the smoke tests with:
-
-```bash
-npm test
-
-## Zod and Fixture Validation
-
-Run the local schema and fixture checks:
-
-```bash
-npm run check:schemas
-```
-
-The script checks:
-
-- Valid and invalid inputs for `search_notes`.
-- Valid and invalid inputs for `search_faqs`.
-- Valid and invalid inputs for `get_note`.
-- The shape of `data/notes.json`.
-- The shape of `data/faqs.json`.
-- Duplicate note and FAQ IDs.
-- Rejection of unsafe file paths.
-
-A successful run should end with:
-
-```text
-All tool input, fixture, and safe path checks passed.
-```
-
-## Local Fixture Data
-
-Local notes are stored in:
-
-```text
-data/notes.json
-```
-
-Local FAQ entries are stored in:
-
-```text
-data/faqs.json
-```
-
-The files are committed to the repository, parsed as JSON, and validated with Zod before the P0 tools use them.
-
-## Zod Schemas
-
-Tool input schemas and local file payload schemas are located in:
-
-```text
-src/schemas/
-```
-
-The current schemas are:
-
-- `search-notes.ts`
-- `search-faqs.ts`
-- `get-note.ts`
-- `list-notes.ts`
-- `add-note.ts`
-- `note-data.ts`
-- `faq-data.ts`
-
-There is no `src/schemas/index.ts` file.
-
-## Search Behavior
-
-The search tools:
-
-- Normalize the query and searchable text.
-- Split the query into distinct search terms.
-- Match terms against note or FAQ fields.
-- Calculate a simple relevance score.
-- Order results by score.
-- Apply the requested result limit.
-- Return an empty `results` array with a short message when no matches are found.
-
-This is simple keyword matching and not semantic or AI-based search.
-
-## MCP Server Setup
-
-Each planned tool has its own register function inside:
-
-```text
-src/tools/
-```
-
-The server factory is located in:
-
-```text
-src/index.ts
-```
-
-The `createServer()` function creates a fresh `McpServer` instance and registers all five planned tools.
-
-The server uses stdio transport through:
-
-```ts
-void serveStdio(createServer);
-```
-
-Server logs are written using `console.error` because stdout is reserved for the MCP protocol.
-
-## Running the MCP Server in Development
-
-Start the server using:
+Start the MCP server in development mode:
 
 ```bash
 npm run dev
 ```
 
-A successful start should show:
+The server runs over stdio and waits for an MCP client connection.
 
-```text
-notes-faq-search-mcp MCP server running on stdio
-```
-
-The process then remains active while waiting for stdio input.
-
-Stop the server using:
+To stop it, press:
 
 ```text
 Ctrl+C
 ```
 
+Optional smoke tests can be run with:
+
+```bash
+npm test
+```
+
 ## MCP Inspector
 
-Run MCP Inspector from the project root:
+From the project root, launch MCP Inspector with:
 
 ```bash
 npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 ```
 
-The Inspector should list:
+When the Inspector opens, connect to the server and open the **Tools** section.
 
-- `search_notes`
-- `search_faqs`
-- `get_note`
-- `list_notes`
-- `add_note`
+You should see all five tools listed below.
 
-Valid sample arguments are available inside:
+## Tools
 
-```text
-examples/
+| Tool           | Purpose                                          | Main Input                          |
+| -------------- | ------------------------------------------------ | ----------------------------------- |
+| `search_notes` | Search locally stored notes using keywords       | `query`, optional `limit`           |
+| `search_faqs`  | Search locally stored FAQ questions and answers  | `query`, optional `limit`           |
+| `get_note`     | Retrieve one complete note by its ID             | `note_id`                           |
+| `list_notes`   | List stored notes, optionally filtered by tag    | optional `tag`, optional `limit`    |
+| `add_note`     | Validate and add a new note to `data/notes.json` | `title`, `content`, optional `tags` |
+
+`limit` must be a positive integer no greater than `20`.
+
+## Example Prompts
+
+### Search notes
+
+Ask the server to:
+
+> Find notes about MCP tools and resources.
+
+Use `search_notes` with:
+
+```json
+{
+  "query": "MCP tools and resources",
+  "limit": 5
+}
 ```
 
-The Week 2 Inspector proof verified tool discovery, input validation, and placeholder responses.
+### Search FAQs
 
-Real local-data verification for the Week 3 P0 handlers must still be completed before this README claims that the final workflow passed Inspector testing.
+Ask the server to:
 
-## Commands Not Added Yet
+> Find the FAQ that explains what an MCP tool is.
 
-The following commands are not available:
+Use `search_faqs` with:
+
+```json
+{
+  "query": "What is an MCP tool?",
+  "limit": 5
+}
+```
+
+### Get a note
+
+Ask the server to:
+
+> Get the full note with ID note-001.
+
+Use `get_note` with:
+
+```json
+{
+  "note_id": "note-001"
+}
+```
+
+### List notes
+
+Ask the server to:
+
+> List up to five notes.
+
+Use `list_notes` with:
+
+```json
+{
+  "limit": 5
+}
+```
+
+### Add a note
+
+Ask the server to:
+
+> Add a note about testing the MCP server.
+
+Use `add_note` with:
+
+```json
+{
+  "title": "MCP Testing",
+  "content": "Use MCP Inspector to test the server tools.",
+  "tags": ["mcp", "testing"]
+}
+```
+
+`add_note` writes the validated note to `data/notes.json`, so it changes the local fixture data.
+
+## Troubleshooting
+
+### 1. `npm` or Node.js is not available
+
+If commands such as `npm install` or `npm run dev` are not recognized, confirm that Node.js 20 or later and npm are installed:
 
 ```bash
-npm run build
-npm start
-npm run inspect
+node --version
+npm --version
 ```
 
-They will be added only when the corresponding build, production start, and Inspector scripts are implemented.
+Install or update Node.js if the commands are missing or the Node.js version is older than 20.
 
-## Offline Operation
+### 2. The server or MCP Inspector does not start
 
-The notes and FAQ fixture data is stored locally inside the repository.
+Make sure you are running commands from the repository root and that dependencies were installed first:
 
-The project does not require paid APIs, API keys, cloud storage, hosted AI models, or an internet connection to access and search the fixture files.
+```bash
+npm install
+```
 
-## Project Status
+Then launch Inspector with the exact command:
 
-- [x] Project selected
-- [x] Project design completed
-- [x] Three P0 tools defined
-- [x] Two P1 tools defined
-- [x] P0 Zod input schemas added
-- [x] P1 Zod input schemas added
-- [x] Local P0 schema checks added
-- [x] MCP server factory added
-- [x] Stdio server setup added
-- [x] All planned tools registered
-- [x] Placeholder handlers added for the Week 2 skeleton
-- [x] Development server command added
-- [x] One valid JSON example added for every planned tool
-- [x] Week 2 Inspector proof completed
-- [x] Local notes data added
-- [x] Local FAQ data added
-- [x] Week 3 data plan added
-- [x] Safe local file loading added
-- [x] Note and FAQ fixture schemas added
-- [x] Duplicate ID validation added
-- [x] Real P0 handlers implemented
-- [x] Empty search result handling implemented
-- [x] Missing-note error handling implemented
-- [x] Short user-facing error handling implemented
-- [x] Real `list_notes` handler implemented
-- [x] Real `add_note` handler implemented
-- [x] Safe local note writing implemented
-- [x] Real local-data handlers tested in MCP Inspector
+```bash
+npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
+```
+
+The project uses stdio for MCP communication, so avoid adding normal output to stdout while the MCP server is running.
+
+### 3. A tool returns an input validation error
+
+Check that the input matches the expected schema.
+
+For search tools:
+
+* `query` must not be empty.
+* `limit`, when provided, must be a positive integer from `1` to `20`.
+
+For `get_note`, use an ID in this format:
+
+```text
+note-001
+```
+
+For example:
+
+```json
+{
+  "note_id": "note-001"
+}
+```
+
+Do not use file paths or values such as `../etc/passwd` as note IDs.
+
+## License
+
+This project is licensed under the ISC license as declared in `package.json`.
