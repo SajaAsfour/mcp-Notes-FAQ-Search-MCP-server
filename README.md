@@ -77,6 +77,7 @@ Ctrl+C
 ```
 
 > **Note:** If you are using MCP Inspector for testing, you do **not** need to run `npm run dev` separately. The MCP Inspector command below starts the server for the Inspector connection.
+
 Optional smoke tests can be run with:
 
 ```bash
@@ -97,9 +98,23 @@ When the Inspector opens, connect to the server and open the **Tools** section.
 
 You should see all five tools listed below.
 
-When the Inspector opens, connect to the server and open the **Tools** section.
+### First Successful Tool Call
 
-You should see all five tools listed below.
+To verify that the server is working, you can make your first tool call using `get_note`:
+
+1. Open the **Tools** section in MCP Inspector.
+2. Select `get_note`.
+3. Enter the following input:
+
+```json
+{
+  "note_id": "note-001"
+}
+```
+
+4. Run the tool.
+
+A successful call should return the requested note data in the Inspector response.
 
 ## Tools
 
@@ -135,6 +150,7 @@ Use `search_notes` with:
 Ask the server to:
 
 > Find the FAQ that explains what an MCP tool is.
+
 Use `search_faqs` with:
 
 ```json
@@ -188,7 +204,7 @@ Use `add_note` with:
 }
 ```
 
-`add_note` writes the validated note to `data/notes.json`, so it changes the local fixture data.
+`add_note` writes the validated note to `data/notes.json`. This changes **only the local copy of the project's fixture data on your machine**; it does not modify any shared database or GitHub data.
 
 ## Troubleshooting
 
@@ -218,6 +234,7 @@ npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 ```
 
 If you are using MCP Inspector, do not start `npm run dev` at the same time.
+
 The project uses stdio for MCP communication, so avoid adding normal output to stdout while the MCP server is running.
 
 ### 3. A tool returns an input validation error
