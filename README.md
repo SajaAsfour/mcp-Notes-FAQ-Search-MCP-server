@@ -76,6 +76,7 @@ To stop it, press:
 Ctrl+C
 ```
 
+> **Note:** If you are using MCP Inspector for testing, you do **not** need to run `npm run dev` separately. The MCP Inspector command below starts the server for the Inspector connection.
 Optional smoke tests can be run with:
 
 ```bash
@@ -89,6 +90,12 @@ From the project root, launch MCP Inspector with:
 ```bash
 npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 ```
+
+> **Important:** Use either `npm run dev` with another MCP client, or the MCP Inspector command for Inspector-based testing. You do not need to run both at the same time.
+
+When the Inspector opens, connect to the server and open the **Tools** section.
+
+You should see all five tools listed below.
 
 When the Inspector opens, connect to the server and open the **Tools** section.
 
@@ -128,7 +135,6 @@ Use `search_notes` with:
 Ask the server to:
 
 > Find the FAQ that explains what an MCP tool is.
-
 Use `search_faqs` with:
 
 ```json
@@ -211,6 +217,7 @@ Then launch Inspector with the exact command:
 npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 ```
 
+If you are using MCP Inspector, do not start `npm run dev` at the same time.
 The project uses stdio for MCP communication, so avoid adding normal output to stdout while the MCP server is running.
 
 ### 3. A tool returns an input validation error
