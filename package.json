@@ -6,9 +6,10 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "check:schemas": "tsx scripts/check-schemas.ts",
-    "dev": "tsx src/index.ts"
+  "typecheck": "tsc --noEmit",
+  "check:schemas": "tsx scripts/check-schemas.ts",
+  "dev": "tsx src/index.ts",
+  "test": "node --import tsx --test src/**/*.test.ts"
   },
   "repository": {
     "type": "git",
