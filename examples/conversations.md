@@ -66,3 +66,54 @@ Here is the complete note for `note-001`, including its title, full content, tag
 **Good final answer**
 
 Here are up to five saved notes from your local collection, with their basic note information so you can decide which one you want to open.
+
+---
+
+## Conversation D — Search FAQs
+
+**User prompt**
+
+> Find the FAQ that explains what an MCP tool is.
+
+**Expected tool call**
+
+1. `search_faqs`
+
+```json
+{
+  "query": "What is an MCP tool?",
+  "limit": 5
+}
+```
+
+**Good final answer**
+
+I found the FAQ explaining what an MCP tool is. It describes an MCP tool as a capability exposed by the server that a model can call to perform a specific action.
+
+---
+
+## Conversation E — Add a Note
+
+**User prompt**
+
+> Save a note reminding me how to test the MCP server.
+
+**Expected tool call**
+
+1. `add_note`
+
+```json
+{
+  "title": "MCP Testing",
+  "content": "Use MCP Inspector to test the server tools.",
+  "tags": [
+    "mcp",
+    "testing"
+  ]
+}
+```
+
+**Good final answer**
+
+I added a new note titled **MCP Testing** to your local notes collection with the tags `mcp` and `testing`.
+

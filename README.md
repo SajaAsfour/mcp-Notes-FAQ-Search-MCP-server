@@ -206,6 +206,10 @@ Use `add_note` with:
 
 `add_note` writes the validated note to `data/notes.json`. This changes **only the local copy of the project's fixture data on your machine**; it does not modify any shared database or GitHub data.
 
+## Example Conversations
+
+See [examples/conversations.md](examples/conversations.md) for complete model interaction examples covering all five MCP tools, including the user prompt, expected tool call arguments, and example final responses.
+
 ## Troubleshooting
 
 ### 1. `npm` or Node.js is not available
