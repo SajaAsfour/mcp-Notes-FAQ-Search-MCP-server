@@ -24,7 +24,7 @@
     "zod"
   ],
   "author": "Saja Asfour and Yara Khattab",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server/issues"
   },
