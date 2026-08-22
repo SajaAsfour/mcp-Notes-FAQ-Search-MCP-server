@@ -268,4 +268,4 @@ Do not use file paths or values such as `../etc/passwd` as note IDs.
 
 ## License
 
-This project is licensed under the ISC license as declared in `package.json`.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
