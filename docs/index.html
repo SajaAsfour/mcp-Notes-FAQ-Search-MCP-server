@@ -13,8 +13,10 @@
     <nav aria-label="Main navigation">
       <a href="#problem">Problem</a>
       <a href="#architecture">Architecture</a>
-      <a href="#tools">Tools</a>
-      <a href="#offline">Offline</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#security">Safety</a>
+      <a href="#claude">Claude</a>
+      <a href="#demo">Demo</a>
       <a href="#run">Run</a>
     </nav>
     <a class="button button-small" href="https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server" target="_blank" rel="noreferrer">GitHub</a>
@@ -24,18 +26,19 @@
     <section class="hero section" id="home">
       <div class="hero-copy">
         <p class="eyebrow">NextFlows Academy · Demo Day</p>
-        <h1>Search, retrieve, list, and safely add local knowledge through MCP.</h1>
+        <h1>Local knowledge, exposed safely to AI through MCP.</h1>
         <p class="lead">
-          Notes & FAQ Search is an offline TypeScript MCP server that connects an MCP host
-          such as Claude Desktop to locally stored notes and FAQs.
+          Notes & FAQ Search is an offline TypeScript MCP server that lets an MCP host
+          search, retrieve, list, and safely add locally stored notes and FAQs.
         </p>
         <div class="hero-actions">
           <a class="button" href="#architecture">See how it works</a>
-          <a class="button button-secondary" href="#run">Run locally</a>
+          <a class="button button-secondary" href="#demo">Live demo prompts</a>
         </div>
         <div class="badges" aria-label="Project highlights">
+          <span>5 MCP Tools</span>
+          <span>2 Resources</span>
           <span>TypeScript</span>
-          <span>MCP</span>
           <span>Zod v4</span>
           <span>Local JSON</span>
           <span>Offline Runtime</span>
@@ -44,7 +47,7 @@
 
       <div class="terminal-card" aria-label="Example MCP conversation">
         <div class="terminal-top"><span></span><span></span><span></span></div>
-        <p class="terminal-label">Claude → MCP</p>
+        <p class="terminal-label">Claude → Notes & FAQ MCP</p>
         <code>Find notes about MCP tools and resources.</code>
         <div class="terminal-arrow">↓</div>
         <code class="accent-code">search_notes({ query: "MCP tools and resources" })</code>
@@ -53,9 +56,16 @@
       </div>
     </section>
 
+    <section class="section stats" aria-label="Project summary">
+      <div><strong>5</strong><span>Tools</span></div>
+      <div><strong>2</strong><span>Resources</span></div>
+      <div><strong>0</strong><span>Cloud DBs</span></div>
+      <div><strong>1</strong><span>Local runtime</span></div>
+    </section>
+
     <section class="section" id="problem">
       <div class="section-heading">
-        <p class="eyebrow">01 · Problem</p>
+        <p class="eyebrow">01 · Problem & Value</p>
         <h2>Useful knowledge should be easy for an AI assistant to access—without moving it to the cloud.</h2>
       </div>
       <div class="grid grid-3">
@@ -65,12 +75,16 @@
         </article>
         <article class="card">
           <h3>Manual retrieval</h3>
-          <p>Users should not need to manually open JSON files and scan them for every answer.</p>
+          <p>Users should not need to open data files and scan them manually for every answer.</p>
         </article>
         <article class="card">
-          <h3>Privacy & portability</h3>
-          <p>The runtime should work without a database or external API and keep data under local control.</p>
+          <h3>Local control</h3>
+          <p>The runtime keeps project data local and does not depend on a cloud database or external API.</p>
         </article>
+      </div>
+      <div class="callout">
+        <strong>Our answer:</strong>
+        <span>Give an AI host a small set of explicit MCP tools instead of giving it unrestricted access to the data layer.</span>
       </div>
     </section>
 
@@ -84,7 +98,7 @@
         <div class="arch-node">
           <span class="arch-kicker">Host</span>
           <strong>Claude Desktop</strong>
-          <small>Natural-language request</small>
+          <small>User asks naturally</small>
         </div>
         <div class="arch-arrow">→</div>
         <div class="arch-node emphasis">
@@ -96,7 +110,7 @@
         <div class="arch-node">
           <span class="arch-kicker">Validation</span>
           <strong>Zod v4</strong>
-          <small>Validated tool inputs</small>
+          <small>Validated tool input</small>
         </div>
         <div class="arch-arrow">→</div>
         <div class="arch-node">
@@ -106,23 +120,28 @@
         </div>
       </div>
 
-      <div class="callout">
-        <strong>No cloud database is required.</strong>
-        <span>The MCP server reads local fixture data and exposes focused tools and resources over stdio.</span>
+      <div class="flow-note">
+        <span>User prompt</span><b>→</b><span>Claude selects a tool</span><b>→</b><span>MCP validates input</span><b>→</b><span>Local handler runs</span><b>→</b><span>Bounded result returns</span>
       </div>
     </section>
 
-    <section class="section" id="tools">
+    <section class="section" id="capabilities">
       <div class="section-heading">
-        <p class="eyebrow">03 · Core Tools</p>
-        <h2>The notes-side capabilities used in the live demo.</h2>
+        <p class="eyebrow">03 · Capabilities</p>
+        <h2>Five focused tools cover search, retrieval, listing, and safe local writing.</h2>
       </div>
 
-      <div class="grid grid-3">
+      <div class="grid grid-tools">
         <article class="card tool-card">
           <span class="tool-name">search_notes</span>
           <h3>Search notes</h3>
           <p>Searches locally stored notes using validated keywords with bounded result limits.</p>
+          <code>query · limit?</code>
+        </article>
+        <article class="card tool-card">
+          <span class="tool-name">search_faqs</span>
+          <h3>Search FAQs</h3>
+          <p>Searches FAQ questions and answers and returns concise matching results.</p>
           <code>query · limit?</code>
         </article>
         <article class="card tool-card">
@@ -137,51 +156,176 @@
           <p>Lists notes with optional tag filtering and a bounded result limit.</p>
           <code>tag? · limit?</code>
         </article>
+        <article class="card tool-card write-card">
+          <span class="tool-name">add_note</span>
+          <h3>Add a note</h3>
+          <p>Validates a new note and safely serializes it back to the local notes file.</p>
+          <code>title · content · tags?</code>
+        </article>
       </div>
 
-      <div class="resource-strip">
-        <div>
-          <span class="eyebrow">Read-only resource</span>
-          <strong>notes://index</strong>
-        </div>
-        <p>Exposes a structured notes index to an MCP client without changing stored data.</p>
+      <div class="resource-grid">
+        <article class="resource-strip">
+          <div><span class="eyebrow">Read-only resource</span><strong>notes://index</strong></div>
+          <p>Structured notes index.</p>
+        </article>
+        <article class="resource-strip">
+          <div><span class="eyebrow">Read-only resource</span><strong>faq://index</strong></div>
+          <p>Structured FAQ index.</p>
+        </article>
       </div>
     </section>
 
-    <section class="section section-alt" id="offline">
+    <section class="section section-alt" id="security">
       <div class="section-heading">
-        <p class="eyebrow">04 · Offline-First Runtime</p>
-        <h2>The server does not depend on a cloud service to execute its tools.</h2>
+        <p class="eyebrow">04 · Safety by Design</p>
+        <h2>Every boundary is intentionally narrow.</h2>
       </div>
 
+      <div class="grid grid-3">
+        <article class="card safety-card">
+          <span>01</span>
+          <h3>Input validation</h3>
+          <p>Model input is checked with Zod before handlers use it.</p>
+        </article>
+        <article class="card safety-card">
+          <span>02</span>
+          <h3>Filesystem protection</h3>
+          <p>Data access is restricted to the project’s allowed local data area.</p>
+        </article>
+        <article class="card safety-card">
+          <span>03</span>
+          <h3>Bounded output</h3>
+          <p>Search and list results use limits and controlled output sizes.</p>
+        </article>
+        <article class="card safety-card">
+          <span>04</span>
+          <h3>Safe writing</h3>
+          <p><code>add_note</code> validates and serializes a controlled note write.</p>
+        </article>
+        <article class="card safety-card">
+          <span>05</span>
+          <h3>Safe errors</h3>
+          <p>User-facing errors stay short while technical details use stderr where needed.</p>
+        </article>
+        <article class="card safety-card">
+          <span>06</span>
+          <h3>Secret hygiene</h3>
+          <p>The repository includes ignore/example environment practices and no real secret logging.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="offline">
+      <div class="section-heading">
+        <p class="eyebrow">05 · Offline Runtime</p>
+        <h2>The MCP server itself keeps working when the network is unavailable.</h2>
+      </div>
       <div class="grid grid-2">
         <article class="card">
           <h3>What stays local</h3>
           <ul class="check-list">
             <li>Tool handlers</li>
-            <li>Input validation</li>
+            <li>Zod validation</li>
             <li>Notes and FAQ data</li>
             <li>Search and retrieval logic</li>
             <li>Validated note writes</li>
           </ul>
         </article>
         <article class="card">
-          <h3>Offline verification</h3>
+          <h3>How we verified it</h3>
           <p>
-            With Wi-Fi disabled, MCP Inspector can still start the local stdio server,
-            list its tools, and call tools against the local JSON data.
+            With Wi-Fi disabled, MCP Inspector can start the local stdio server,
+            list its tools, and invoke tools against the local JSON files.
           </p>
-          <p class="muted">
-            Claude itself still requires connectivity to the Claude service; the offline claim applies to our MCP server runtime.
+          <p class="important-note">
+            The offline claim applies to our MCP server runtime. Claude itself still requires connectivity to the Claude service.
           </p>
         </article>
       </div>
     </section>
 
-    <section class="section" id="run">
+    <section class="section section-alt" id="claude">
       <div class="section-heading">
-        <p class="eyebrow">05 · Run Locally</p>
-        <h2>From clone to MCP server in three commands.</h2>
+        <p class="eyebrow">06 · Claude Desktop Integration</p>
+        <h2>The project runs as a real local MCP server inside Claude Desktop.</h2>
+      </div>
+
+      <div class="grid grid-2">
+        <article class="card">
+          <h3>Project MCP</h3>
+          <p><code>notes-faq-search</code> exposes the project’s five tools and two resources to Claude over stdio.</p>
+          <div class="mini-flow">
+            <span>Claude</span><b>→</b><span>notes-faq-search</span><b>→</b><span>Local data</span>
+          </div>
+        </article>
+        <article class="card">
+          <h3>Live code-edit demonstration</h3>
+          <p>
+            For Demo Day, a separate restricted filesystem MCP integration can be given access only to the project directory.
+            Claude can then edit a real project file, and Git shows the exact local diff.
+          </p>
+          <p class="muted">
+            This filesystem integration is a development/demo companion. It is not one of the five tools implemented by the Notes & FAQ Search server.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="demo">
+      <div class="section-heading">
+        <p class="eyebrow">07 · Live Demo</p>
+        <h2>Prompts we can run directly in Claude.</h2>
+      </div>
+
+      <div class="prompt-list">
+        <article class="prompt-card">
+          <div><span>01</span><strong>Search notes</strong></div>
+          <p>Find notes about MCP tools and resources.</p>
+          <button class="copy-button" data-copy="Find notes about MCP tools and resources.">Copy prompt</button>
+        </article>
+
+        <article class="prompt-card">
+          <div><span>02</span><strong>Search FAQs</strong></div>
+          <p>Find the FAQ that explains what an MCP tool is.</p>
+          <button class="copy-button" data-copy="Find the FAQ that explains what an MCP tool is.">Copy prompt</button>
+        </article>
+
+        <article class="prompt-card">
+          <div><span>03</span><strong>Get note</strong></div>
+          <p>Get the full note with ID note-001.</p>
+          <button class="copy-button" data-copy="Get the full note with ID note-001.">Copy prompt</button>
+        </article>
+
+        <article class="prompt-card">
+          <div><span>04</span><strong>List notes</strong></div>
+          <p>List up to five notes.</p>
+          <button class="copy-button" data-copy="List up to five notes.">Copy prompt</button>
+        </article>
+
+        <article class="prompt-card">
+          <div><span>05</span><strong>Add note</strong></div>
+          <p>Add a note titled "Demo Day Check" with the content "This note was added live through Claude Desktop using our Notes & FAQ Search MCP server." and tags "mcp", "demo", and "claude".</p>
+          <button class="copy-button" data-copy='Add a note titled "Demo Day Check" with the content "This note was added live through Claude Desktop using our Notes & FAQ Search MCP server." and tags "mcp", "demo", and "claude".'>Copy prompt</button>
+        </article>
+      </div>
+
+      <div class="demo-proof">
+        <div>
+          <p class="eyebrow">Write proof</p>
+          <h3>After <code>add_note</code>, the new note exists in <code>data/notes.json</code>.</h3>
+        </div>
+        <div>
+          <p class="eyebrow">Code-edit proof</p>
+          <h3>After Claude edits a project file, <code>git diff</code> shows the real filesystem change.</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="run">
+      <div class="section-heading">
+        <p class="eyebrow">08 · Install & Run</p>
+        <h2>From clone to local MCP server.</h2>
       </div>
 
       <div class="steps">
@@ -207,6 +351,75 @@ cd mcp-Notes-FAQ-Search-MCP-server</code></pre>
             <pre><code>npm run dev</code></pre>
           </div>
         </article>
+        <article class="step">
+          <span>4</span>
+          <div>
+            <h3>Inspect</h3>
+            <pre><code>npx -y @modelcontextprotocol/inspector npx tsx src/index.ts</code></pre>
+          </div>
+        </article>
+      </div>
+
+      <div class="launcher-card">
+        <div>
+          <p class="eyebrow">Windows real-host launcher</p>
+          <h3><code>start-mcp.cmd</code></h3>
+        </div>
+        <pre><code>@echo off
+cd /d "%~dp0"
+call npx.cmd -y tsx src\index.ts</code></pre>
+      </div>
+    </section>
+
+    <section class="section" id="team">
+      <div class="section-heading">
+        <p class="eyebrow">09 · Team</p>
+        <h2>Built collaboratively across search, retrieval, safety, testing, documentation, and demo delivery.</h2>
+      </div>
+      <div class="grid grid-2">
+        <article class="card team-card">
+          <span class="avatar">SA</span>
+          <div>
+            <h3>Saja Asfour</h3>
+            <p>Partner 1 · Notes-side functionality, list/search flows, hardening, host integration, shipping, and Demo Day architecture.</p>
+            <div class="social-links" aria-label="Saja Asfour social links">
+              <a href="https://github.com/SajaAsfour" target="_blank" rel="noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/sajaasfour/" target="_blank" rel="noreferrer">LinkedIn</a>
+            </div>
+          </div>
+        </article>
+        <article class="card team-card">
+          <span class="avatar">YK</span>
+          <div>
+            <h3>Yara Khattab</h3>
+            <p>Partner 2 · FAQ-side functionality, safe note writing, validation/review work, documentation, and final demo coverage.</p>
+            <div class="social-links" aria-label="Yara Khattab social links">
+              <a href="https://github.com/yarakhattab" target="_blank" rel="noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/yara-khattab-290369320/" target="_blank" rel="noreferrer">LinkedIn</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section future">
+      <p class="eyebrow">10 · What We Would Build Next</p>
+      <h2>Keep the core small, then extend only when the use case requires it.</h2>
+      <div class="future-items">
+        <span>Richer ranking</span>
+        <span>More local content formats</span>
+        <span>More local search and ranking options</span>
+        <span>Expanded host integrations</span>
+      </div>
+    </section>
+
+    <section class="section final-cta">
+      <p class="eyebrow">Ready for questions</p>
+      <h2>Notes & FAQ Search MCP Server</h2>
+      <p>Local data. Explicit tools. Safe boundaries. Real MCP host integration.</p>
+      <div class="hero-actions">
+        <a class="button" href="https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server" target="_blank" rel="noreferrer">Open GitHub repository</a>
+        <a class="button button-secondary" href="#home">Back to top</a>
       </div>
     </section>
   </main>
@@ -214,11 +427,15 @@ cd mcp-Notes-FAQ-Search-MCP-server</code></pre>
   <footer>
     <div>
       <strong>Notes & FAQ Search MCP Server</strong>
-      <p>NextFlows Academy · Built by Saja Asfour & Yara Khattab</p>
+      <p>NextFlows Academy · Saja Asfour & Yara Khattab</p>
     </div>
-    <a href="https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server" target="_blank" rel="noreferrer">View source on GitHub →</a>
+    <div class="footer-meta">
+      <span>Release: v1.0.0</span>
+      <a href="https://github.com/SajaAsfour/mcp-Notes-FAQ-Search-MCP-server" target="_blank" rel="noreferrer">Source →</a>
+    </div>
   </footer>
 
+  <div class="toast" id="toast" role="status" aria-live="polite">Prompt copied</div>
   <script src="script.js"></script>
 </body>
 </html>
