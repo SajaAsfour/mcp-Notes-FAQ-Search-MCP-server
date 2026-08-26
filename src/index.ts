@@ -8,6 +8,7 @@ import { registerGetNoteTool } from "./tools/get-note.js";
 import { registerListNotesTool } from "./tools/list-notes.js";
 import { registerSearchFaqsTool } from "./tools/search-faqs.js";
 import { registerSearchNotesTool } from "./tools/search-notes.js";
+import { registerUpdateNoteTool } from "./tools/update-note.js";
 
 export function createServer(): McpServer {
   const server = new McpServer({
@@ -23,6 +24,7 @@ export function createServer(): McpServer {
   registerGetNoteTool(server);
   registerListNotesTool(server);
   registerAddNoteTool(server);
+  registerUpdateNoteTool(server);
 
   return server;
 }

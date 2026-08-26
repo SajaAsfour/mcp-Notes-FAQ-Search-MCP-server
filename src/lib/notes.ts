@@ -32,6 +32,13 @@ export type NewNoteInput = {
   tags?: string[];
 };
 
+export type UpdateNoteInput = {
+  note_id: string;
+  title?: string;
+  content?: string;
+  tags?: string[];
+};
+
 let noteWriteQueue: Promise<void> =
   Promise.resolve();
 
@@ -199,4 +206,60 @@ export async function addNoteSafely(
   }
 
   return createdNote;
+}
+
+export async function updateNoteSafely(
+  input: UpdateNoteInput,
+): Promise<NoteData | undefined> {
+  let updatedNote: NoteData | undefined;
+
+  const operation = noteWriteQueue.then(
+    async () => {
+      const notes = await loadNotes();
+
+      const noteIndex = notes.findIndex(
+        (note) => note.id === input.note_id,
+      );
+
+      if (noteIndex < 0) {
+        return;
+      }
+
+      const currentNote = notes[noteIndex];
+
+      const note = noteDataSchema.parse({
+        ...currentNote,
+
+        title:
+          input.title === undefined
+            ? currentNote.title
+            : input.title.trim(),
+
+        content:
+          input.content === undefined
+            ? currentNote.content
+            : input.content.trim(),
+
+        tags:
+          input.tags === undefined
+            ? currentNote.tags
+            : input.tags.map((tag) => tag.trim()),
+      });
+
+      const updatedNotes = [...notes];
+      updatedNotes[noteIndex] = note;
+
+      await saveNotes(updatedNotes);
+
+      updatedNote = note;
+    },
+  );
+
+  noteWriteQueue = operation.catch(
+    () => undefined,
+  );
+
+  await operation;
+
+  return updatedNote;
 }
