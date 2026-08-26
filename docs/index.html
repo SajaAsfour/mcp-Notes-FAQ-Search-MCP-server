@@ -29,14 +29,14 @@
         <h1>Local knowledge, exposed safely to AI through MCP.</h1>
         <p class="lead">
           Notes & FAQ Search is an offline TypeScript MCP server that lets an MCP host
-          search, retrieve, list, safely add, and update locally stored notes and FAQs.
+          search, retrieve, list, safely add, update, and delete locally stored notes and FAQs.
         </p>
         <div class="hero-actions">
           <a class="button" href="#architecture">See how it works</a>
           <a class="button button-secondary" href="#demo">Live demo prompts</a>
         </div>
         <div class="badges" aria-label="Project highlights">
-          <span>6 MCP Tools</span>
+          <span>7 MCP Tools</span>
           <span>2 Resources</span>
           <span>TypeScript</span>
           <span>Zod v4</span>
@@ -57,7 +57,7 @@
     </section>
 
     <section class="section stats" aria-label="Project summary">
-      <div><strong>6</strong><span>Tools</span></div>
+      <div><strong>7</strong><span>Tools</span></div>
       <div><strong>2</strong><span>Resources</span></div>
       <div><strong>0</strong><span>Cloud DBs</span></div>
       <div><strong>1</strong><span>Local runtime</span></div>
@@ -130,7 +130,7 @@
     <section class="section" id="capabilities">
       <div class="section-heading">
         <p class="eyebrow">03 · Capabilities</p>
-        <h2>Six focused tools cover search, retrieval, listing, and safe local note mutations.</h2>
+        <h2>Seven focused tools cover search, retrieval, listing, and safe local note mutations.</h2>
       </div>
 
       <div class="grid grid-tools">
@@ -169,11 +169,18 @@
           <code>title · content · tags?</code>
         </article>
 
-        <article class="card tool-card">
+        <article class="card tool-card write-card">
           <span class="tool-name">update_note</span>
           <h3>Update a note</h3>
           <p>Updates selected fields of an existing locally stored note while preserving its note ID.</p>
           <code>note_id · title? · content? · tags?</code>
+        </article>
+
+        <article class="card tool-card write-card">
+          <span class="tool-name">delete_note</span>
+          <h3>Delete a note</h3>
+          <p>Deletes an existing locally stored note by its validated note ID.</p>
+          <code>note_id</code>
         </article>
       </div>
 
@@ -217,7 +224,7 @@
         <article class="card safety-card">
           <span>04</span>
           <h3>Safe writing</h3>
-          <p><code>add_note</code> and <code>update_note</code> validate controlled local note mutations before saving them.</p>
+          <p><code>add_note</code>, <code>update_note</code>, and <code>delete_note</code> validate controlled local note mutations before saving changes.</p>
         </article>
 
         <article class="card safety-card">
@@ -248,7 +255,7 @@
             <li>Zod validation</li>
             <li>Notes and FAQ data</li>
             <li>Search and retrieval logic</li>
-            <li>Validated note writes and updates</li>
+            <li>Validated note writes, updates, and deletes</li>
           </ul>
         </article>
 
@@ -274,7 +281,7 @@
       <div class="grid grid-2">
         <article class="card">
           <h3>Project MCP</h3>
-          <p><code>notes-faq-search</code> exposes the project’s six tools and two resources to Claude over stdio.</p>
+          <p><code>notes-faq-search</code> exposes the project’s seven tools and two resources to Claude over stdio.</p>
           <div class="mini-flow">
             <span>Claude</span><b>→</b><span>notes-faq-search</span><b>→</b><span>Local data</span>
           </div>
@@ -287,7 +294,7 @@
             Claude can then edit a real project file, and Git shows the exact local diff.
           </p>
           <p class="muted">
-            This filesystem integration is a development/demo companion. It is not one of the six tools implemented by the Notes & FAQ Search server.
+            This filesystem integration is a development/demo companion. It is not one of the seven tools implemented by the Notes & FAQ Search server.
           </p>
         </article>
       </div>
@@ -335,12 +342,18 @@
           <p>Update note-001 and change its title to "Updated MCP Note".</p>
           <button class="copy-button" data-copy='Update note-001 and change its title to "Updated MCP Note".'>Copy prompt</button>
         </article>
+
+        <article class="prompt-card">
+          <div><span>07</span><strong>Delete note</strong></div>
+          <p>Delete the note with ID note-006.</p>
+          <button class="copy-button" data-copy="Delete the note with ID note-006.">Copy prompt</button>
+        </article>
       </div>
 
       <div class="demo-proof">
         <div>
           <p class="eyebrow">Mutation proof</p>
-          <h3>After <code>add_note</code> or <code>update_note</code>, the change is persisted in <code>data/notes.json</code>.</h3>
+          <h3>After <code>add_note</code>, <code>update_note</code>, or <code>delete_note</code>, the change is persisted in <code>data/notes.json</code>.</h3>
         </div>
         <div>
           <p class="eyebrow">Code-edit proof</p>
