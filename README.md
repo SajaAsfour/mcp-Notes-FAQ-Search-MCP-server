@@ -8,18 +8,19 @@ https://nextflows.ai/academy
 
 ## What It Does
 
-Notes & FAQ Search is a TypeScript MCP server for searching and managing locally stored notes and frequently asked questions.
+Notes & FAQ Search is an offline TypeScript MCP server for searching, retrieving, listing, adding, updating, and deleting locally stored notes and FAQs.
 
 The server works fully offline at runtime and uses local JSON fixture data instead of a cloud database or external API.
 
-It exposes six MCP tools:
+It exposes seven MCP tools:
 
 - Search notes.
 - Search FAQs.
 - Retrieve a complete note by ID.
 - List notes with optional tag filtering.
 - Add a new note safely to local storage.
-- Update an existing note safely in local storage.
+- Update an existing note safely.
+- Delete an existing note safely.
 
 The server also exposes two read-only MCP resources:
 
@@ -109,7 +110,7 @@ npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 
 When the Inspector opens, connect to the server and open the **Tools** section.
 
-You should see all six tools listed below.
+You should see all seven tools listed below.
 
 ### First Successful Tool Call
 
@@ -139,6 +140,7 @@ A successful call should return the requested note data in the Inspector respons
 | `list_notes` | List stored notes, optionally filtered by tag | optional `tag`, optional `limit` |
 | `add_note` | Validate and add a new note to `data/notes.json` | `title`, `content`, optional `tags` |
 | `update_note` | Update the title, content, or tags of an existing note | `note_id`, optional `title`, optional `content`, optional `tags` |
+| `delete_note` | Delete an existing locally stored note | `note_id` |
 
 `limit` must be a positive integer no greater than `20`.
 
@@ -250,9 +252,22 @@ You can also update more than one field in the same request:
 
 `update_note` modifies only the fields provided in the request. Fields that are not included remain unchanged. The note keeps the same ID after the update.
 
+### Delete a note
+
+Ask the server to:
+
+> Delete the note with ID note-006.
+
+Use `delete_note` with:
+
+```json
+{
+  "note_id": "note-006"
+}
+
 ## Example Conversations
 
-See [examples/conversations.md](examples/conversations.md) for model interaction examples covering the server's search, retrieval, listing, and note-mutation workflows.
+See `examples/conversations.md` for model interaction examples covering the server's search, retrieval, listing, and mutation workflows.
 
 ## Local Data
 
