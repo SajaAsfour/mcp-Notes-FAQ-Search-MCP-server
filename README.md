@@ -1,6 +1,6 @@
 # NextFlows
 
-Hi, this is my Academy MCP project
+Hi, this is my Academy MCP project.
 
 https://nextflows.ai/academy
 
@@ -12,26 +12,27 @@ Notes & FAQ Search is a TypeScript MCP server for searching and managing locally
 
 The server works fully offline at runtime and uses local JSON fixture data instead of a cloud database or external API.
 
-It exposes five MCP tools:
+It exposes six MCP tools:
 
-* Search notes.
-* Search FAQs.
-* Retrieve a complete note by ID.
-* List notes with optional tag filtering.
-* Add a new note safely to local storage.
+- Search notes.
+- Search FAQs.
+- Retrieve a complete note by ID.
+- List notes with optional tag filtering.
+- Add a new note safely to local storage.
+- Update an existing note safely in local storage.
 
 The server also exposes two read-only MCP resources:
 
-* `notes://index`
-* `faq://index`
+- `notes://index`
+- `faq://index`
 
 ## Requirements
 
 Before installing the project, make sure you have:
 
-* Git
-* Node.js 20 or later
-* npm
+- Git
+- Node.js 20 or later
+- npm
 
 Check Node.js and npm with:
 
@@ -84,6 +85,18 @@ Optional smoke tests can be run with:
 npm test
 ```
 
+Schema checks can be run with:
+
+```bash
+npm run check:schemas
+```
+
+TypeScript type checking can be run with:
+
+```bash
+npm run typecheck
+```
+
 ## MCP Inspector
 
 From the project root, launch MCP Inspector with:
@@ -96,7 +109,7 @@ npx -y @modelcontextprotocol/inspector npx tsx src/index.ts
 
 When the Inspector opens, connect to the server and open the **Tools** section.
 
-You should see all five tools listed below.
+You should see all six tools listed below.
 
 ### First Successful Tool Call
 
@@ -118,15 +131,18 @@ A successful call should return the requested note data in the Inspector respons
 
 ## Tools
 
-| Tool           | Purpose                                          | Main Input                          |
-| -------------- | ------------------------------------------------ | ----------------------------------- |
-| `search_notes` | Search locally stored notes using keywords       | `query`, optional `limit`           |
-| `search_faqs`  | Search locally stored FAQ questions and answers  | `query`, optional `limit`           |
-| `get_note`     | Retrieve one complete note by its ID             | `note_id`                           |
-| `list_notes`   | List stored notes, optionally filtered by tag    | optional `tag`, optional `limit`    |
-| `add_note`     | Validate and add a new note to `data/notes.json` | `title`, `content`, optional `tags` |
+| Tool | Purpose | Main Input |
+| --- | --- | --- |
+| `search_notes` | Search locally stored notes using keywords | `query`, optional `limit` |
+| `search_faqs` | Search locally stored FAQ questions and answers | `query`, optional `limit` |
+| `get_note` | Retrieve one complete note by its ID | `note_id` |
+| `list_notes` | List stored notes, optionally filtered by tag | optional `tag`, optional `limit` |
+| `add_note` | Validate and add a new note to `data/notes.json` | `title`, `content`, optional `tags` |
+| `update_note` | Update the title, content, or tags of an existing note | `note_id`, optional `title`, optional `content`, optional `tags` |
 
 `limit` must be a positive integer no greater than `20`.
+
+For `update_note`, at least one of `title`, `content`, or `tags` must be provided together with a valid `note_id`.
 
 ## Example Prompts
 
@@ -206,9 +222,52 @@ Use `add_note` with:
 
 `add_note` writes the validated note to `data/notes.json`. This changes **only the local copy of the project's fixture data on your machine**; it does not modify any shared database or GitHub data.
 
+### Update a note
+
+Ask the server to:
+
+> Update note-001 with a new title.
+
+Use `update_note` with:
+
+```json
+{
+  "note_id": "note-001",
+  "title": "Updated MCP Testing Note"
+}
+```
+
+You can also update more than one field in the same request:
+
+```json
+{
+  "note_id": "note-001",
+  "title": "Updated MCP Testing Note",
+  "content": "This note was updated through the MCP server.",
+  "tags": ["mcp", "testing", "updated"]
+}
+```
+
+`update_note` modifies only the fields provided in the request. Fields that are not included remain unchanged. The note keeps the same ID after the update.
+
 ## Example Conversations
 
-See [examples/conversations.md](examples/conversations.md) for complete model interaction examples covering all five MCP tools, including the user prompt, expected tool call arguments, and example final responses.
+See [examples/conversations.md](examples/conversations.md) for model interaction examples covering the server's search, retrieval, listing, and note-mutation workflows.
+
+## Local Data
+
+The project stores its local fixture data in:
+
+```text
+data/notes.json
+data/faqs.json
+```
+
+The server remains offline at runtime.
+
+Read operations use the local JSON data, while `add_note` and `update_note` can modify the local `data/notes.json` file.
+
+Because these mutations are local, changes made during testing affect only the local project copy unless those data changes are intentionally committed to Git.
 
 ## Troubleshooting
 
@@ -247,10 +306,10 @@ Check that the input matches the expected schema.
 
 For search tools:
 
-* `query` must not be empty.
-* `limit`, when provided, must be a positive integer from `1` to `20`.
+- `query` must not be empty.
+- `limit`, when provided, must be a positive integer from `1` to `20`.
 
-For `get_note`, use an ID in this format:
+For `get_note` and `update_note`, use an ID in this format:
 
 ```text
 note-001
@@ -265,6 +324,29 @@ For example:
 ```
 
 Do not use file paths or values such as `../etc/passwd` as note IDs.
+
+For `update_note`, provide at least one field to change:
+
+```json
+{
+  "note_id": "note-001",
+  "title": "Updated Title"
+}
+```
+
+An update containing only `note_id` should be rejected because no change was requested.
+
+### 4. `update_note` cannot find the note
+
+Use `list_notes` first to confirm the ID of the note you want to update.
+
+Then call `update_note` using the exact note ID returned by the server.
+
+### 5. Claude or another MCP host does not show `update_note`
+
+Confirm that your local project is on the branch or commit containing the new tool and that `registerUpdateNoteTool(server)` is registered in `src/index.ts`.
+
+Then fully restart the MCP host so it performs tool discovery again.
 
 ## License
 

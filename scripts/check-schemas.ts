@@ -21,6 +21,8 @@ import {
   validateFetchUrl,
 } from "../src/lib/http.js";
 
+import { updateNoteInputSchema } from "../src/schemas/update-note.js";
+
 const tooLongFaqQuery =
   searchFaqsInputSchema.safeParse({
     query: "x".repeat(201),
@@ -159,6 +161,41 @@ const emptyAddNoteContent = addNoteInputSchema.safeParse({
   title: "Valid title",
   content: "",
 });
+
+const validUpdateNote =
+  updateNoteInputSchema.safeParse({
+    note_id: "note-001",
+    title: "Updated MCP Note",
+  });
+
+if (!validUpdateNote.success) {
+  throw new Error(
+    "The update_note schema rejected a valid update.",
+  );
+}
+
+const emptyUpdate =
+  updateNoteInputSchema.safeParse({
+    note_id: "note-001",
+  });
+
+if (emptyUpdate.success) {
+  throw new Error(
+    "The update_note schema accepted an update with no changed fields.",
+  );
+}
+
+const invalidUpdateNoteId =
+  updateNoteInputSchema.safeParse({
+    note_id: "../notes.json",
+    title: "Invalid",
+  });
+
+if (invalidUpdateNoteId.success) {
+  throw new Error(
+    "The update_note schema accepted an invalid note ID.",
+  );
+}
 
 const tooManyAddNoteTags = addNoteInputSchema.safeParse({
   title: "Valid title",

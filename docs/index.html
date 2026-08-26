@@ -29,14 +29,14 @@
         <h1>Local knowledge, exposed safely to AI through MCP.</h1>
         <p class="lead">
           Notes & FAQ Search is an offline TypeScript MCP server that lets an MCP host
-          search, retrieve, list, and safely add locally stored notes and FAQs.
+          search, retrieve, list, safely add, and update locally stored notes and FAQs.
         </p>
         <div class="hero-actions">
           <a class="button" href="#architecture">See how it works</a>
           <a class="button button-secondary" href="#demo">Live demo prompts</a>
         </div>
         <div class="badges" aria-label="Project highlights">
-          <span>5 MCP Tools</span>
+          <span>6 MCP Tools</span>
           <span>2 Resources</span>
           <span>TypeScript</span>
           <span>Zod v4</span>
@@ -57,7 +57,7 @@
     </section>
 
     <section class="section stats" aria-label="Project summary">
-      <div><strong>5</strong><span>Tools</span></div>
+      <div><strong>6</strong><span>Tools</span></div>
       <div><strong>2</strong><span>Resources</span></div>
       <div><strong>0</strong><span>Cloud DBs</span></div>
       <div><strong>1</strong><span>Local runtime</span></div>
@@ -68,6 +68,7 @@
         <p class="eyebrow">01 · Problem & Value</p>
         <h2>Useful knowledge should be easy for an AI assistant to access—without moving it to the cloud.</h2>
       </div>
+
       <div class="grid grid-3">
         <article class="card">
           <h3>Scattered information</h3>
@@ -82,6 +83,7 @@
           <p>The runtime keeps project data local and does not depend on a cloud database or external API.</p>
         </article>
       </div>
+
       <div class="callout">
         <strong>Our answer:</strong>
         <span>Give an AI host a small set of explicit MCP tools instead of giving it unrestricted access to the data layer.</span>
@@ -128,7 +130,7 @@
     <section class="section" id="capabilities">
       <div class="section-heading">
         <p class="eyebrow">03 · Capabilities</p>
-        <h2>Five focused tools cover search, retrieval, listing, and safe local writing.</h2>
+        <h2>Six focused tools cover search, retrieval, listing, and safe local note mutations.</h2>
       </div>
 
       <div class="grid grid-tools">
@@ -138,29 +140,40 @@
           <p>Searches locally stored notes using validated keywords with bounded result limits.</p>
           <code>query · limit?</code>
         </article>
+
         <article class="card tool-card">
           <span class="tool-name">search_faqs</span>
           <h3>Search FAQs</h3>
           <p>Searches FAQ questions and answers and returns concise matching results.</p>
           <code>query · limit?</code>
         </article>
+
         <article class="card tool-card">
           <span class="tool-name">get_note</span>
           <h3>Get one note</h3>
           <p>Retrieves the full content of a known note by validated note ID.</p>
           <code>note_id</code>
         </article>
+
         <article class="card tool-card">
           <span class="tool-name">list_notes</span>
           <h3>List notes</h3>
           <p>Lists notes with optional tag filtering and a bounded result limit.</p>
           <code>tag? · limit?</code>
         </article>
+
         <article class="card tool-card write-card">
           <span class="tool-name">add_note</span>
           <h3>Add a note</h3>
           <p>Validates a new note and safely serializes it back to the local notes file.</p>
           <code>title · content · tags?</code>
+        </article>
+
+        <article class="card tool-card">
+          <span class="tool-name">update_note</span>
+          <h3>Update a note</h3>
+          <p>Updates selected fields of an existing locally stored note while preserving its note ID.</p>
+          <code>note_id · title? · content? · tags?</code>
         </article>
       </div>
 
@@ -188,26 +201,31 @@
           <h3>Input validation</h3>
           <p>Model input is checked with Zod before handlers use it.</p>
         </article>
+
         <article class="card safety-card">
           <span>02</span>
           <h3>Filesystem protection</h3>
           <p>Data access is restricted to the project’s allowed local data area.</p>
         </article>
+
         <article class="card safety-card">
           <span>03</span>
           <h3>Bounded output</h3>
           <p>Search and list results use limits and controlled output sizes.</p>
         </article>
+
         <article class="card safety-card">
           <span>04</span>
           <h3>Safe writing</h3>
-          <p><code>add_note</code> validates and serializes a controlled note write.</p>
+          <p><code>add_note</code> and <code>update_note</code> validate controlled local note mutations before saving them.</p>
         </article>
+
         <article class="card safety-card">
           <span>05</span>
           <h3>Safe errors</h3>
           <p>User-facing errors stay short while technical details use stderr where needed.</p>
         </article>
+
         <article class="card safety-card">
           <span>06</span>
           <h3>Secret hygiene</h3>
@@ -221,6 +239,7 @@
         <p class="eyebrow">05 · Offline Runtime</p>
         <h2>The MCP server itself keeps working when the network is unavailable.</h2>
       </div>
+
       <div class="grid grid-2">
         <article class="card">
           <h3>What stays local</h3>
@@ -229,9 +248,10 @@
             <li>Zod validation</li>
             <li>Notes and FAQ data</li>
             <li>Search and retrieval logic</li>
-            <li>Validated note writes</li>
+            <li>Validated note writes and updates</li>
           </ul>
         </article>
+
         <article class="card">
           <h3>How we verified it</h3>
           <p>
@@ -254,11 +274,12 @@
       <div class="grid grid-2">
         <article class="card">
           <h3>Project MCP</h3>
-          <p><code>notes-faq-search</code> exposes the project’s five tools and two resources to Claude over stdio.</p>
+          <p><code>notes-faq-search</code> exposes the project’s six tools and two resources to Claude over stdio.</p>
           <div class="mini-flow">
             <span>Claude</span><b>→</b><span>notes-faq-search</span><b>→</b><span>Local data</span>
           </div>
         </article>
+
         <article class="card">
           <h3>Live code-edit demonstration</h3>
           <p>
@@ -266,7 +287,7 @@
             Claude can then edit a real project file, and Git shows the exact local diff.
           </p>
           <p class="muted">
-            This filesystem integration is a development/demo companion. It is not one of the five tools implemented by the Notes & FAQ Search server.
+            This filesystem integration is a development/demo companion. It is not one of the six tools implemented by the Notes & FAQ Search server.
           </p>
         </article>
       </div>
@@ -308,12 +329,18 @@
           <p>Add a note titled "Demo Day Check" with the content "This note was added live through Claude Desktop using our Notes & FAQ Search MCP server." and tags "mcp", "demo", and "claude".</p>
           <button class="copy-button" data-copy='Add a note titled "Demo Day Check" with the content "This note was added live through Claude Desktop using our Notes & FAQ Search MCP server." and tags "mcp", "demo", and "claude".'>Copy prompt</button>
         </article>
+
+        <article class="prompt-card">
+          <div><span>06</span><strong>Update note</strong></div>
+          <p>Update note-001 and change its title to "Updated MCP Note".</p>
+          <button class="copy-button" data-copy='Update note-001 and change its title to "Updated MCP Note".'>Copy prompt</button>
+        </article>
       </div>
 
       <div class="demo-proof">
         <div>
-          <p class="eyebrow">Write proof</p>
-          <h3>After <code>add_note</code>, the new note exists in <code>data/notes.json</code>.</h3>
+          <p class="eyebrow">Mutation proof</p>
+          <h3>After <code>add_note</code> or <code>update_note</code>, the change is persisted in <code>data/notes.json</code>.</h3>
         </div>
         <div>
           <p class="eyebrow">Code-edit proof</p>
@@ -337,6 +364,7 @@
 cd mcp-Notes-FAQ-Search-MCP-server</code></pre>
           </div>
         </article>
+
         <article class="step">
           <span>2</span>
           <div>
@@ -344,6 +372,7 @@ cd mcp-Notes-FAQ-Search-MCP-server</code></pre>
             <pre><code>npm install</code></pre>
           </div>
         </article>
+
         <article class="step">
           <span>3</span>
           <div>
@@ -351,6 +380,7 @@ cd mcp-Notes-FAQ-Search-MCP-server</code></pre>
             <pre><code>npm run dev</code></pre>
           </div>
         </article>
+
         <article class="step">
           <span>4</span>
           <div>
@@ -376,18 +406,20 @@ call npx.cmd -y tsx src\index.ts</code></pre>
         <p class="eyebrow">09 · Team</p>
         <h2>Built collaboratively across search, retrieval, safety, testing, documentation, and demo delivery.</h2>
       </div>
+
       <div class="grid grid-2">
         <article class="card team-card">
           <span class="avatar">SA</span>
           <div>
             <h3>Saja Asfour</h3>
-            <p>Partner 1 · Notes-side functionality, list/search flows, hardening, host integration, shipping, and Demo Day architecture.</p>
+            <p>Partner 1 · Notes-side functionality, list/search/update flows, hardening, host integration, shipping, and Demo Day architecture.</p>
             <div class="social-links" aria-label="Saja Asfour social links">
               <a href="https://github.com/SajaAsfour" target="_blank" rel="noreferrer">GitHub</a>
               <a href="https://www.linkedin.com/in/sajaasfour/" target="_blank" rel="noreferrer">LinkedIn</a>
             </div>
           </div>
         </article>
+
         <article class="card team-card">
           <span class="avatar">YK</span>
           <div>

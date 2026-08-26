@@ -117,3 +117,25 @@ I found the FAQ explaining what an MCP tool is. It describes an MCP tool as a ca
 
 I added a new note titled **MCP Testing** to your local notes collection with the tags `mcp` and `testing`.
 
+---
+
+## Conversation F — Update a Note
+
+**User prompt**
+
+> Update note-001 and change its title to Updated MCP Note.
+
+**Expected tool call**
+
+1. `update_note`
+
+```json
+{
+  "note_id": "note-001",
+  "title": "Updated MCP Note"
+}
+```
+
+**Good final answer**
+
+The note was updated successfully. Its ID remains `note-001`, and the requested title change was saved to the local notes collection.
