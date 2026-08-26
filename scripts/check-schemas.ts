@@ -22,6 +22,41 @@ import {
 } from "../src/lib/http.js";
 
 import { updateNoteInputSchema } from "../src/schemas/update-note.js";
+import { deleteNoteInputSchema } from "../src/schemas/delete-note.js";
+
+const validDeleteNote =
+  deleteNoteInputSchema.safeParse({
+    note_id: "note-001",
+  });
+
+if (!validDeleteNote.success) {
+  throw new Error(
+    "The delete_note schema rejected a valid note ID.",
+  );
+}
+
+const invalidDeleteNoteId =
+  deleteNoteInputSchema.safeParse({
+    note_id: "../notes.json",
+  });
+
+if (invalidDeleteNoteId.success) {
+  throw new Error(
+    "The delete_note schema accepted an invalid note ID.",
+  );
+}
+
+const unexpectedDeleteField =
+  deleteNoteInputSchema.safeParse({
+    note_id: "note-001",
+    file: "notes.json",
+  });
+
+if (unexpectedDeleteField.success) {
+  throw new Error(
+    "The delete_note schema accepted an unexpected field.",
+  );
+}
 
 const tooLongFaqQuery =
   searchFaqsInputSchema.safeParse({

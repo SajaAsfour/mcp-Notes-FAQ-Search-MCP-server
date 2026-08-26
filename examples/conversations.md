@@ -139,3 +139,25 @@ I added a new note titled **MCP Testing** to your local notes collection with th
 **Good final answer**
 
 The note was updated successfully. Its ID remains `note-001`, and the requested title change was saved to the local notes collection.
+
+---
+
+## Conversation G — Delete a Note
+
+User prompt
+
+> Delete the note with ID note-006.
+
+Expected tool call
+
+1. `delete_note`
+
+```json
+{
+  "note_id": "note-006"
+}
+```
+
+**Good final answer**
+
+The note was deleted successfully from the local note collection. A follow-up list_notes call can be used to confirm that the note is no longer present.

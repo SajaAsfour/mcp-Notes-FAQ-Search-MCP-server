@@ -39,6 +39,10 @@ export type UpdateNoteInput = {
   tags?: string[];
 };
 
+export type DeleteNoteInput = {
+  note_id: string;
+};
+
 let noteWriteQueue: Promise<void> =
   Promise.resolve();
 
@@ -262,4 +266,40 @@ export async function updateNoteSafely(
   await operation;
 
   return updatedNote;
+}
+
+export async function deleteNoteSafely(
+  input: DeleteNoteInput,
+): Promise<NoteData | undefined> {
+  let deletedNote: NoteData | undefined;
+
+  const operation = noteWriteQueue.then(
+    async () => {
+      const notes = await loadNotes();
+
+      const noteIndex = notes.findIndex(
+        (note) => note.id === input.note_id,
+      );
+
+      if (noteIndex < 0) {
+        return;
+      }
+
+      deletedNote = notes[noteIndex];
+
+      const remainingNotes = notes.filter(
+        (note) => note.id !== input.note_id,
+      );
+
+      await saveNotes(remainingNotes);
+    },
+  );
+
+  noteWriteQueue = operation.catch(
+    () => undefined,
+  );
+
+  await operation;
+
+  return deletedNote;
 }
